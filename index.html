@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Studio — Synel · v10</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#F5F5F0;--surface:#fff;--border:#E5E7EB;--text:#1a1a1a;--text2:#6B7280;--text3:#9CA3AF;--accent:#4F46E5;--green:#2D7A4F;--orange:#E8603C;--r:12px;}
+body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(--bg);min-height:100vh;}
+.header{background:#1e1b4b;height:52px;display:flex;align-items:center;padding:0 24px;gap:12px;}
+.logo{font-size:15px;font-weight:700;color:white;}
+.h-sep{width:1px;height:18px;background:rgba(255,255,255,.2);}
+.h-sub{font-size:12px;color:rgba(255,255,255,.5);}
+.main{max-width:960px;margin:0 auto;padding:32px 20px;}
+.hero{margin-bottom:32px;text-align:center;}
+.hero h1{font-size:26px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.hero p{font-size:14px;color:var(--text2);line-height:1.6;}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px;}
+.tab{padding:10px 22px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;font-family:inherit;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500;}
+.section-title{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:32px;}
+.card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:8px;text-decoration:none;}
+.card:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(79,70,229,.1);transform:translateY(-2px);}
+.card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.card-name{font-size:13px;font-weight:600;color:var(--text);}
+.card-desc{font-size:11px;color:var(--text2);line-height:1.5;}
+.card-tag{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:2px;}
+.upload-card{background:white;border:2px dashed var(--border);border-radius:16px;padding:36px;text-align:center;cursor:pointer;transition:all .15s;display:block;text-decoration:none;}
+.upload-card:hover{border-color:var(--accent);background:#EEF2FF;}
+.upload-icon{font-size:44px;margin-bottom:12px;}
+.upload-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.upload-sub{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.5;}
+.btn-primary{display:inline-block;padding:11px 28px;font-size:13px;font-weight:600;border-radius:50px;background:var(--accent);color:white;text-decoration:none;cursor:pointer;}
+.scratch-grid{display:flex;gap:16px;margin-bottom:24px;}
+.scratch-card{flex:1;background:white;border:1.5px solid var(--border);border-radius:14px;padding:24px;text-align:center;text-decoration:none;display:block;transition:all .15s;}
+.scratch-card:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(79,70,229,.1);transform:translateY(-2px);}
+.sc-icon{font-size:38px;margin-bottom:10px;}
+.sc-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.sc-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:14px;}
+.sc-badge{font-size:11px;padding:3px 12px;border-radius:20px;display:inline-block;}
+.send-mode{flex:1;padding:9px;font-size:13px;border-radius:8px;border:1px solid var(--border);background:white;cursor:pointer;font-family:inherit;color:var(--text2);}
+.send-mode.active{background:var(--accent);color:white;border-color:var(--accent);font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚡ Form Studio</div>
+  <div class="h-sep"></div>
+  <div class="h-sub">מחולל טפסים — Synel</div>
+  <span id="brandMount" style="margin-right:auto;"></span>
+</div>
+
+<div class="main">
+  <div class="hero">
+    <h1>בנה טופס דיגיטלי</h1>
+    <p>בחר תבנית מוכנה, או צור טופס חדש ממסמך קיים או מדף ריק</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('templates',this)">📋 תבניות מוכנות</div>
+    <div class="tab" onclick="showTab('create',this)">➕ צור טופס חדש</div>
+    <div class="tab" onclick="showTab('saved',this)">💾 שמורים</div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div id="tab-templates">
+    <div class="section-title">בחר תבנית — תיפתח ישירות לעריכה</div>
+    <div class="grid">
+
+      <a href="template-qa.html" class="card">
+        <div class="card-icon" style="background:#EEF2FF;">📝</div>
+        <div class="card-name">שאלה / תשובה</div>
+        <div class="card-desc">שאלות עם תיבות טקסט חופשי — חפיפה, שאלון כניסה</div>
+        <span class="card-tag" style="background:#EEF2FF;color:#4338CA;">גנרי</span>
+      </a>
+
+      <a href="template-list.html" class="card">
+        <div class="card-icon" style="background:#ECFDF5;">📋</div>
+        <div class="card-name">רשימה + המשך</div>
+        <div class="card-desc">לוז, רשימת משימות, אישור קריאה כללי</div>
+        <span class="card-tag" style="background:#ECFDF5;color:#065F46;">לוז / עמוד</span>
+      </a>
+
+      <a href="template-conditional.html" class="card">
+        <div class="card-icon" style="background:#FEF3C7;">🔀</div>
+        <div class="card-name">שאלה מותנית</div>
+        <div class="card-desc">כן/לא עם ענפים — החזרת ציוד, מכתב המלצה</div>
+        <span class="card-tag" style="background:#FEF3C7;color:#92400E;">דינמי</span>
+      </a>
+
+      <a href="template-survey.html" class="card">
+        <div class="card-icon" style="background:#FDF4FF;">📊</div>
+        <div class="card-name">סקר</div>
+        <div class="card-desc">כוכבים, סקאלה, NPS, בחירה, טקסט חופשי</div>
+        <span class="card-tag" style="background:#FDF4FF;color:#7E22CE;">סקר</span>
+      </a>
+
+      <a href="template-info-db.html" class="card">
+        <div class="card-icon" style="background:#EFF6FF;">🗄</div>
+        <div class="card-name">הצגת מידע DB</div>
+        <div class="card-desc">גמר חשבון, נתונים מהמערכת + חתימה</div>
+        <span class="card-tag" style="background:#EFF6FF;color:#1D4ED8;">DB</span>
+      </a>
+
+      <a href="template-highlights.html" class="card">
+        <div class="card-icon" style="background:#EEF2FF;">⭐</div>
+        <div class="card-name">Highlights + מסמך</div>
+        <div class="card-desc">כרטיסיות בולטות + מסמך לחתימה — חוזה העסקה</div>
+        <span class="card-tag" style="background:#EEF2FF;color:#4338CA;">חוזה</span>
+      </a>
+
+      <a href="template-quiz.html" class="card">
+        <div class="card-icon" style="background:#FFF7ED;">🧠</div>
+        <div class="card-name">מידע + שאלות הבנה</div>
+        <div class="card-desc">הצג מידע ← שאל ← תגובה מיידית</div>
+        <span class="card-tag" style="background:#FFF7ED;color:#C2410C;">הבנה</span>
+      </a>
+
+      <a href="template-pension.html" class="card">
+        <div class="card-icon" style="background:#F0FDF4;">💰</div>
+        <div class="card-name">שאלון פנסיה</div>
+        <div class="card-desc">זרימה קבועה — ביטוח קיים / פנסיה ברירת מחדל</div>
+        <span class="card-tag" style="background:#F0FDF4;color:#065F46;">פנסיה</span>
+      </a>
+
+      <a href="template-101.html" class="card">
+        <div class="card-icon" style="background:#FEF2F2;">🪪</div>
+        <div class="card-name">טופס 101</div>
+        <div class="card-desc">צילום ת"ז + ספח + מילוי פרטים אישיים מלא</div>
+        <span class="card-tag" style="background:#FEF2F2;color:#991B1B;">רשמי</span>
+      </a>
+
+      <a href="template-flow.html" class="card">
+        <div class="card-icon" style="background:#FFF1EC;">🚪</div>
+        <div class="card-name">מעטפת תהליך</div>
+        <div class="card-desc">עמודי פתיחה · מקדים · סיום — קליטה / סיום העסקה</div>
+        <span class="card-tag" style="background:#FFF1EC;color:#C2410C;">קליטה / סיום</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- SCRATCH -->
+  <!-- CREATE — איחוד מסמך קיים / דף ריק -->
+  <div id="tab-create" style="display:none;">
+    <div class="section-title">איך תרצה להתחיל?</div>
+    <div class="scratch-grid">
+      <a href="template-upload-ocr.html" class="scratch-card">
+        <div class="sc-icon">📄</div>
+        <div class="sc-name">מסמך קיים</div>
+        <div class="sc-desc">העלה תמונה או PDF של טופס/חוזה — המערכת תזהה את השדות אוטומטית ותהפוך אותו לדיגיטלי</div>
+        <span class="sc-badge" style="background:#EEF2FF;color:#4338CA;">תמונה · PDF · טקסט</span>
+      </a>
+      <a href="form-studio.html" class="scratch-card">
+        <div class="sc-icon">✏️</div>
+        <div class="sc-name">דף ריק</div>
+        <div class="sc-desc">בנה טופס מאפס — כתוב טקסט חופשי, עצב, וגרור שדות לאן שתרצה. כמו Word עם שדות דיגיטליים</div>
+        <span class="sc-badge" style="background:#ECFDF5;color:#065F46;">עורך חופשי</span>
+      </a>
+    </div>
+    <div style="margin-top:18px;background:white;border:1px solid var(--border);border-radius:14px;padding:18px;">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">⚡ מכאן הזרימה זהה בשתי הדרכים</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--text2);">
+        <div>✅ אישור ועריכת השדות (תווית, סוג, מי ממלא, ולידציה, שיוך DB)</div>
+        <div>🗂 שיוך הטופס — תהליך, אוכלוסייה ועובד אחראי</div>
+        <div>👁 תצוגה מקדימה ושמירה בשם לשימוש חוזר</div>
+        <div>📤 שליחה לקבוצה או ליחיד מתוך "שמורים"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- SAVED -->
+  <div id="tab-saved" style="display:none;">
+    <div class="section-title">הטפסים השמורים שלך — לפתיחה או לשליחה</div>
+    <div id="savedList" class="grid"></div>
+    <div id="savedEmpty" style="display:none;text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;">
+      עדיין אין טפסים שמורים.<br>צרו טופס (תבנית / בנה מאפס / העלאת מסמך) ולחצו "שמור בשם".
+    </div>
+  </div>
+
+  <!-- מודאל שליחה -->
+  <div id="sendModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:16px;width:400px;max-width:92%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.25);">
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px;">שליחת טופס</div>
+      <div id="sendFormName" style="font-size:12px;color:var(--text2);margin-bottom:16px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button id="sendModeGroup" class="send-mode active" onclick="setSendMode('group')">קבוצה</button>
+        <button id="sendModeInd" class="send-mode" onclick="setSendMode('individual')">עובד יחיד</button>
+      </div>
+      <div id="sendGroupBox">
+        <select id="sendGroup" style="width:100%;padding:9px;font-size:13px;border:1px solid var(--border);border-radius:8px;font-family:inherit;"></select>
+      </div>
+      <div id="sendIndBox" style="display:none;">
+        <select id="sendEmployee" style="width:100%;padding:9px;font-size:13px;border:1px solid var(--border);border-radius:8px;font-family:inherit;"></select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:18px;">
+        <button class="btn-primary" style="flex:1;" onclick="confirmSend()">שלח</button>
+        <button onclick="closeSend()" style="flex:1;padding:11px;font-size:13px;border-radius:50px;border:1px solid var(--border);background:white;cursor:pointer;font-family:inherit;">ביטול</button>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-top:10px;text-align:center;">הנמענים מנתוני דמו — יוחלפו בנתונים מ-Harmony</div>
+    </div>
+  </div>
+
+<script>
+function showTab(name, el){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  ['templates','create','saved'].forEach(function(n){
+    document.getElementById('tab-'+n).style.display = n===name ? 'block' : 'none';
+  });
+  if(name==='saved')renderSaved();
+}
+
+/* ── טעינת טפסים שמורים מ-localStorage ── */
+function loadSavedForms(){
+  var STORES=[
+    {p:'qa_template_',  file:'template-qa.html',         cnt:function(d){return (d.questions||[]).length;}},
+    {p:'list_template_',file:'template-list.html',       cnt:function(d){return (d.rows||[]).length;}},
+    {p:'hl_',           file:'template-highlights.html', cnt:function(d){return (d.hlSections||[]).length;}},
+    {p:'quiz_',         file:'template-quiz.html',       cnt:function(d){return (d.questions||[]).length;}},
+    {p:'survey_',       file:'template-survey.html',     cnt:function(d){return (d.questions||[]).length;}},
+    {p:'info_',         file:'template-info-db.html',    cnt:function(d){return (d.sections||[]).length;}},
+    {p:'pension_',      file:'template-pension.html',    cnt:function(d){return 3;}},
+    {p:'cond_',         file:'template-conditional.html', cnt:function(d){return (d.questions||[]).length;}},
+    {p:'f101_',         file:'template-101.html',         cnt:function(d){return (d.fieldsCount||5);}},
+    {p:'ocr_',          file:'template-upload-ocr.html', cnt:function(d){return (d.fields||[]).length;}, ocr:true}
+  ];
+  var FLOW_MAP={};
+  var out=[];
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i); if(!k) continue;
+    for(var s=0;s<STORES.length;s++){
+      var st=STORES[s];
+      if(k.indexOf(st.p)===0){
+        try{
+          var d=JSON.parse(localStorage.getItem(k));
+          var nm=d.name||d.fName||d.docTitle||k.slice(st.p.length);
+          var op = st.ocr ? (st.file+'?open='+encodeURIComponent(k))
+                          : (st.file+'?load='+encodeURIComponent(nm));
+          if(FLOW_MAP[nm]) op = FLOW_MAP[nm];
+          out.push({key:k, name:nm, savedAt:d.savedAt, count:st.cnt(d), open: op});
+        }catch(e){}
+        break;
+      }
+    }
+  }
+  return out.sort(function(a,b){return (b.savedAt||'').localeCompare(a.savedAt||'');});
+}
+
+function renderSaved(){
+  var list=document.getElementById('savedList');var empty=document.getElementById('savedEmpty');
+  var forms=loadSavedForms();
+  list.innerHTML='';
+  if(!forms.length){empty.style.display='block';return;}
+  empty.style.display='none';
+  forms.forEach(function(f){
+    var card=document.createElement('div');card.className='card';card.style.cursor='default';
+    var date=f.savedAt?new Date(f.savedAt).toLocaleDateString('he-IL'):'';
+    card.innerHTML='<div class="card-icon" style="background:#EEF2FF;">📄</div>'
+      +'<div class="card-name">'+f.name+'</div>'
+      +'<div class="card-desc">'+f.count+' שדות'+(date?' · '+date:'')+'</div>';
+    var btns=document.createElement('div');btns.style.cssText='display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;';
+    var openBtn=document.createElement('button');openBtn.textContent='הצג';
+    openBtn.style.cssText='flex:1;padding:7px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--accent);background:white;color:var(--accent);cursor:pointer;font-family:inherit;';
+    openBtn.onclick=function(){location.href=f.open;};
+    var sendBtn=document.createElement('button');sendBtn.textContent='שלח';
+    sendBtn.style.cssText='flex:1;padding:7px;font-size:12px;font-weight:600;border-radius:8px;border:none;background:var(--accent);color:white;cursor:pointer;font-family:inherit;';
+    sendBtn.onclick=function(){openSend(f);};
+    var delBtn=document.createElement('button');delBtn.textContent='מחק';
+    delBtn.style.cssText='padding:7px 12px;font-size:12px;border-radius:8px;border:1px solid #FECACA;background:#FEF2F2;color:#DC2626;cursor:pointer;font-family:inherit;';
+    delBtn.onclick=function(){if(confirm('למחוק את "'+f.name+'"?')){localStorage.removeItem(f.key);renderSaved();}};
+    btns.appendChild(openBtn);btns.appendChild(sendBtn);btns.appendChild(delBtn);
+    card.appendChild(btns);
+    list.appendChild(card);
+  });
+}
+
+/* ── מודאל שליחה ── */
+var _sendForm=null, _sendMode='group';
+function openSend(f){
+  _sendForm=f;_sendMode='group';
+  document.getElementById('sendFormName').textContent='"'+f.name+'" · '+f.count+' שדות';
+  if(typeof SynelOrg!=='undefined'){
+    SynelOrg.populateGroups(document.getElementById('sendGroup'));
+    SynelOrg.populateEmployees(document.getElementById('sendEmployee'));
+  }
+  setSendMode('group');
+  document.getElementById('sendModal').style.display='flex';
+}
+function setSendMode(m){
+  _sendMode=m;
+  document.getElementById('sendModeGroup').classList.toggle('active',m==='group');
+  document.getElementById('sendModeInd').classList.toggle('active',m==='individual');
+  document.getElementById('sendGroupBox').style.display=m==='group'?'block':'none';
+  document.getElementById('sendIndBox').style.display=m==='individual'?'block':'none';
+}
+function closeSend(){document.getElementById('sendModal').style.display='none';_sendForm=null;}
+function confirmSend(){
+  var target, label;
+  if(_sendMode==='group'){
+    target=document.getElementById('sendGroup').value;
+    label=document.getElementById('sendGroup').selectedOptions[0]?document.getElementById('sendGroup').selectedOptions[0].textContent:'';
+  }else{
+    target=document.getElementById('sendEmployee').value;
+    label=document.getElementById('sendEmployee').selectedOptions[0]?document.getElementById('sendEmployee').selectedOptions[0].textContent:'';
+  }
+  if(!target){alert('בחר/י נמען');return;}
+  // רישום השליחה (זמני ב-localStorage — בהמשך נשלח ל-Harmony)
+  var rec={form:_sendForm.name,formKey:_sendForm.key,mode:_sendMode,target:target,targetLabel:label,sentAt:new Date().toISOString()};
+  try{var log=JSON.parse(localStorage.getItem('send_log')||'[]');log.push(rec);localStorage.setItem('send_log',JSON.stringify(log));}catch(e){}
+  closeSend();
+  alert('הטופс "'+_sendForm.name+'" נשלח אל: '+label+'\n(רישום זמני — יוחלף בשליחה דרך Harmony)');
+}
+</script>
+<script src="synel-org.js"></script>
+<script src="synel-export.js"></script>
+<script src="synel-brand.js"></script>
+<script>
+(function(){
+  function mount(){
+    if(typeof SynelBrand!=='undefined' && document.getElementById('brandMount')){
+      document.getElementById('brandMount').appendChild(SynelBrand.button());
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mount); else mount();
+})();
+</script>
+<script src="synel-help.js"></script>
+
+<script>/* Synel v7: זריעה לעורכים + ניקוי שאריות */
+(function(){
+  function dec(x){try{return JSON.parse(decodeURIComponent(escape(atob(x))));}catch(e){return null;}}
+  var SEED=dec("eyJxYV90ZW1wbGF0ZV/Xl9ek15nXpNeUINec157Xl9ec15nXoy/XlCI6IHsibmFtZSI6ICLXl9ek15nXpNeUINec157Xl9ec15nXoy/XlCIsICJzdWIiOiAi15TXoteR16jXqiDXmdeT16Ig157XodeV15PXqNeqINec157Xl9ec15nXoy/XlCIsICJ0aW1lIjogIiIsICJidG4iOiAi16HXmdeV150g15fXpNeZ16TXlCDihpAiLCAicHJvY2VzcyI6ICJvZmZib2FyZGluZyIsICJzdGVwQ3VyIjogIjUiLCAic3RlcFRvdGFsIjogIjYiLCAib3duZXIiOiAiIiwgImN1c3RvbVVybCI6ICIiLCAicXVlc3Rpb25zIjogW3sidGl0bGUiOiAi157XqdeZ157XldeqINek16rXldeX15XXqiIsICJkZXNjIjogItek16jXldeZ16fXmNeZ150sINeT15Mt15zXmdeZ16DXmdedINen16jXldeR15nXnSIsICJwbGFjZWhvbGRlciI6ICLXnNeT15XXktee15Q6INeh15nXldedINee16TXqNeYIEFQSSDXnNec16fXldeXIFgg16LXkyAxNS82Li4uIn0sIHsidGl0bGUiOiAi15DXoNep15kg16fXqdeoINeX16nXldeR15nXnSIsICJkZXNjIjogIteh16TXp9eZ150sINec16fXldeX15XXqiwg16LXnteZ16rXmdedIiwgInBsYWNlaG9sZGVyIjogItec15PXldeS157XlDog15nXldeh15kg15vXlNefICjXodek16cg16jXm9epKS4uLiJ9LCB7InRpdGxlIjogIteQ15nXpNeUINeU16fXkdem15nXnT8iLCAiZGVzYyI6ICLXqteZ16fXmdeV16osINeT16jXmdeZ15EsINeV15nXp9eZIiwgInBsYWNlaG9sZGVyIjogItec15PXldeS157XlDogU2hhcmVQb2ludC9NYXJrZXRpbmcvMjAyNi4uLiJ9XX0sICJsaXN0X3RlbXBsYXRlX9eo16nXmdee16og16fXnNeZ15jXlCDigJQg15jXpNeh15nXnSDXnNee15nXnNeV15kiOiB7Im5hbWUiOiAi16jXqdeZ157XqiDXp9ec15nXmNeUIOKAlCDXmNek16HXmdedINec157Xmdec15XXmSIsICJzdWIiOiAi15vXnCDXlNeY16TXodeZ150g16nXotec15nXmiDXnNeU16nXnNeZ150g15HXp9ec15nXmNeUIiwgInRpbWUiOiAiIiwgImRhdGVNb2RlIjogIm5vbmUiLCAiaGFzUHJvZ3Jlc3MiOiB0cnVlLCAiaGFzUkMiOiB0cnVlLCAicmNUZXh0IjogIteQ16DXmSDXnteQ16nXqC/XqiDXqdeU16nXnNee16rXmSDXkNeqINeb15wg15TXmNek16HXmdedIiwgImhhc1NpZyI6IGZhbHNlLCAicHJvY2VzcyI6ICJvbmJvYXJkaW5nIiwgInN0ZXBDdXIiOiAiMSIsICJzdGVwVG90YWwiOiAiNiIsICJvd25lciI6ICIiLCAicm93cyI6IFt7InR5cGUiOiAic3VidGl0bGUiLCAidGV4dCI6ICLXmNek16HXmdedINep16LXnNeZ15og15zXntec15AifSwgeyJ0eXBlIjogImNoZWNrYm94IiwgInRleHQiOiAi15jXldek16EgMTAxIOKAlCDXpteZ15zXldedINeq17TXliDXldeh16TXlyIsICJjaGVja2VkIjogZmFsc2V9LCB7InR5cGUiOiAiY2hlY2tib3giLCAidGV4dCI6ICLXl9eV15bXlCDXlNei16HXp9eUIOKAlCDXp9eo15nXkNeUINeV15fXqteZ157XlCIsICJjaGVja2VkIjogZmFsc2V9LCB7InR5cGUiOiAiY2hlY2tib3giLCAidGV4dCI6ICLXodei15nXoyAxNCDigJQg15TXodeT16gg16TXmdem15XXmdeZ150iLCAiY2hlY2tlZCI6IGZhbHNlfSwgeyJ0eXBlIjogImNoZWNrYm94IiwgInRleHQiOiAi16DXlNec15kg15TXl9eR16jXlCDigJQg16nXkNec15XXqiDXlNeR16DXlCIsICJjaGVja2VkIjogZmFsc2V9LCB7InR5cGUiOiAiY2hlY2tib3giLCAidGV4dCI6ICLXkNeZ16nXldeoINen15HXnNeqINem15nXldeTIiwgImNoZWNrZWQiOiBmYWxzZX0sIHsidHlwZSI6ICJjaGVja2JveCIsICJ0ZXh0IjogIteU16bXmNeo16TXldeqINec16TXoNeh15nXlCIsICJjaGVja2VkIjogZmFsc2V9XX0sICJsaXN0X3RlbXBsYXRlX9ec15XXtNeWINeZ15XXnSDXkNeX16jXldefIjogeyJuYW1lIjogItec15XXtNeWINeZ15XXnSDXkNeX16jXldefIiwgInN1YiI6ICLXodeT16gg15TXmdeV150g16nXnCDXmdeV150g15TXoteW15nXkdeUIiwgInRpbWUiOiAiIiwgImRhdGVNb2RlIjogImN1c3RvbSIsICJoYXNQcm9ncmVzcyI6IGZhbHNlLCAiaGFzUkMiOiBmYWxzZSwgInJjVGV4dCI6ICIiLCAiaGFzU2lnIjogZmFsc2UsICJwcm9jZXNzIjogIm9mZmJvYXJkaW5nIiwgInN0ZXBDdXIiOiAiNCIsICJzdGVwVG90YWwiOiAiNiIsICJvd25lciI6ICIiLCAicm93cyI6IFt7InR5cGUiOiAic3VidGl0bGUiLCAidGV4dCI6ICLXodeT16gg15TXmdeV150g16nXnNeaIn0sIHsidHlwZSI6ICJ0aW1lLXRleHQiLCAidGltZSI6ICIwOTowMCIsICJ0ZXh0IjogItek15LXmdep16og16HXmdeb15XXnSDXotedIEhSIiwgInRhZyI6ICIiLCAidGFnQ29sb3IiOiAiI0U4NjAzQyJ9LCB7InR5cGUiOiAidGltZS10ZXh0IiwgInRpbWUiOiAiMTA6MzAiLCAidGV4dCI6ICLXlNeX15bXqNeqINem15nXldeTINec4oCRSVQiLCAidGFnIjogIiIsICJ0YWdDb2xvciI6ICIjRTg2MDNDIn0sIHsidHlwZSI6ICJpY29uLXRleHQtZXN0IiwgImljb24iOiAi8J+SvCIsICJ0ZXh0IjogIteo15DXmdeV158g16LXlteZ15HXlCDXpNeV16jXntec15kiLCAic3ViIjogItep15nXl9eUINei15wg15fXldeV15nXmdeqINeU16LXkdeV15PXlCIsICJlc3QiOiAiMTUg15PXp9ezIiwgInRhZyI6ICIiLCAidGFnQ29sb3IiOiAiI0U4NjAzQyJ9LCB7InR5cGUiOiAiaWNvbi10ZXh0LWVzdCIsICJpY29uIjogIvCflqXvuI8iLCAidGV4dCI6ICLXoNeZ16rXldenINeS15nXqdeV16og157Xoteo15vXldeqIiwgInN1YiI6ICJJVCDXmdeR16bXoiDXkdeg15XXm9eX15XXqteaIiwgImVzdCI6ICI1INeT16fXsyIsICJ0YWciOiAiIiwgInRhZ0NvbG9yIjogIiNFODYwM0MifSwgeyJ0eXBlIjogInRpbWUtdGV4dCIsICJ0aW1lIjogIjE2OjAwIiwgInRleHQiOiAi15vXmdeR15XXkyDXpNeo15nXk9eUINeV16TXmdeg15XXmSDXqdeV15zXl9efIiwgInRhZyI6ICIiLCAidGFnQ29sb3IiOiAiI0U4NjAzQyJ9XX0sICJobF/Xl9eV15bXlCDXlNei16HXp9eUIjogeyJuYW1lIjogIteX15XXlteUINeU16LXoden15QiLCAic3ViIjogIteq16DXkNeZINeU15TXoteh16fXlCDXqdec15og4oCUINec16fXqNeZ15DXlCDXldeX16rXmdee15QiLCAidGltZSI6ICIzIiwgImhhc0RvYyI6IHRydWUsICJkb2NCdG5UZXh0IjogItem16TXmdeZ15Qg15HXnteh157XmiDXlNee15zXkCDwn5OEIiwgImRvY1JlcXVpcmVkIjogdHJ1ZSwgImhhc0RvY0NvbnRlbnQiOiBmYWxzZSwgImRvY0NvbnRlbnQiOiAiIiwgImhhc1JDIjogdHJ1ZSwgInJjVGV4dCI6ICLXp9eo15DXqteZINeV15TXkdeg16rXmSDXkNeqINeU157Xodee15og15TXntec15AiLCAiaGFzU2lnIjogdHJ1ZSwgImJ0biI6ICLXkNeZ16nXldeoINeV15TXntep15og4oaQIiwgInByb2Nlc3MiOiAib25ib2FyZGluZyIsICJzdGVwQ3VyIjogIjIiLCAic3RlcFRvdGFsIjogIjYiLCAib3duZXIiOiAiIiwgImhsU2VjdGlvbnMiOiBbeyJ0eXBlIjogImRiIiwgInRpdGxlIjogIiIsICJyb3dzIjogW3sibGFiZWwiOiAi16rXpNen15nXkyIsICJ2YWx1ZSI6ICLXnteg15TXnC/XqiDXqtek16LXldecIiwgImRiRmllbGQiOiAiam9iX3RpdGxlIiwgInR5cGUiOiAidGV4dCJ9LCB7ImxhYmVsIjogItep15vXqCDXl9eV15PXqdeZIiwgInZhbHVlIjogIjE0LDUwMCIsICJkYkZpZWxkIjogIm1vbnRobHlfc2FsYXJ5IiwgInR5cGUiOiAiY3VycmVuY3kifSwgeyJsYWJlbCI6ICLXqdei15XXqiDXoteR15XXk9eUIiwgInZhbHVlIjogIjE4NiDXqdei15XXqi/Xl9eV15PXqSwg15LXnteZ16kiLCAiZGJGaWVsZCI6ICJ3b3JrX2hvdXJzIiwgInR5cGUiOiAidGV4dCJ9LCB7ImxhYmVsIjogIteZ157XmSDXl9eV16TXqdeUIiwgInZhbHVlIjogIjE0INeZ157XmdedINeR16nXoNeUIiwgImRiRmllbGQiOiAidmFjYXRpb25fZGF5cyIsICJ0eXBlIjogInRleHQifSwgeyJsYWJlbCI6ICLXqteg15DXmdedINeh15XXpteZ15DXnNeZ15nXnSIsICJ2YWx1ZSI6ICLXpNeg16HXmdeULCDXp9eo158g15TXqdeq15zXnteV16oiLCAiZGJGaWVsZCI6ICJiZW5lZml0cyIsICJ0eXBlIjogInRleHQifV19XSwgInNhdmVkQXQiOiAiMjAyNi0wNi0yOFQwNzoyMToyMi4xNzhaIiwgImZOYW1lIjogIteX15XXlteUINeU16LXoden15QiLCAiZlN1YiI6ICLXqteg15DXmSDXlNeU16LXoden15Qg16nXnNeaIOKAlCDXnNen16jXmdeQ15Qg15XXl9eq15nXnteUIiwgImZQcm9jZXNzIjogIm9uYm9hcmRpbmciLCAiZlN0ZXBDdXIiOiAiMiIsICJmU3RlcFRvdGFsIjogIjYifSwgImhsX9eh16LXmdejIDE0IjogeyJuYW1lIjogIteh16LXmdejIDE0IiwgInN1YiI6ICLXlNeh15PXqCDXpNeZ16bXldeZ15nXnSDXldek16DXodeZ15Qg15zXpNeZINeh16LXmdejIDE0IiwgInRpbWUiOiAiMyIsICJoYXNEb2MiOiB0cnVlLCAiZG9jQnRuVGV4dCI6ICLXptek15nXmdeUINeR157Xodee15og15TXntec15Ag8J+ThCIsICJkb2NSZXF1aXJlZCI6IHRydWUsICJoYXNEb2NDb250ZW50IjogZmFsc2UsICJkb2NDb250ZW50IjogIiIsICJoYXNSQyI6IHRydWUsICJyY1RleHQiOiAi16fXqNeQ16rXmSDXldeU15HXoNeq15kg15DXqiDXlNee16HXnteaINeU157XnNeQIiwgImhhc1NpZyI6IHRydWUsICJidG4iOiAi15DXmdep15XXqCDXldeU157XqdeaIOKGkCIsICJwcm9jZXNzIjogIm9uYm9hcmRpbmciLCAic3RlcEN1ciI6ICIzIiwgInN0ZXBUb3RhbCI6ICI2IiwgIm93bmVyIjogIiIsICJobFNlY3Rpb25zIjogW3sidHlwZSI6ICJkYiIsICJ0aXRsZSI6ICIiLCAicm93cyI6IFt7ImxhYmVsIjogIteq16TXp9eZ15MiLCAidmFsdWUiOiAi157XoNeU15wv16og16rXpNei15XXnCIsICJkYkZpZWxkIjogImpvYl90aXRsZSIsICJ0eXBlIjogInRleHQifSwgeyJsYWJlbCI6ICLXqdeb16gg15fXldeT16nXmSIsICJ2YWx1ZSI6ICIxNCw1MDAiLCAiZGJGaWVsZCI6ICJtb250aGx5X3NhbGFyeSIsICJ0eXBlIjogImN1cnJlbmN5In0sIHsibGFiZWwiOiAi16nXoteV16og16LXkdeV15PXlCIsICJ2YWx1ZSI6ICIxODYg16nXoteV16ov15fXldeT16ksINeS157XmdepIiwgImRiRmllbGQiOiAid29ya19ob3VycyIsICJ0eXBlIjogInRleHQifSwgeyJsYWJlbCI6ICLXmdee15kg15fXldek16nXlCIsICJ2YWx1ZSI6ICIxNCDXmdee15nXnSDXkdep16DXlCIsICJkYkZpZWxkIjogInZhY2F0aW9uX2RheXMiLCAidHlwZSI6ICJ0ZXh0In0sIHsibGFiZWwiOiAi16rXoNeQ15nXnSDXodeV16bXmdeQ15zXmdeZ150iLCAidmFsdWUiOiAi16TXoNeh15nXlCwg16fXqNefINeU16nXqtec157XldeqIiwgImRiRmllbGQiOiAiYmVuZWZpdHMiLCAidHlwZSI6ICJ0ZXh0In1dfV0sICJzYXZlZEF0IjogIjIwMjYtMDYtMjhUMDc6MjE6MjIuMTc4WiIsICJmTmFtZSI6ICLXodei15nXoyAxNCIsICJmU3ViIjogIteU16HXk9eoINek15nXpteV15nXmdedINeV16TXoNeh15nXlCDXnNek15kg16HXoteZ16MgMTQiLCAiZlByb2Nlc3MiOiAib25ib2FyZGluZyIsICJmU3RlcEN1ciI6ICIzIiwgImZTdGVwVG90YWwiOiAiNiJ9LCAicXVpel/XoNeU15zXmSDXlNeX15HXqNeUIjogeyJuYW1lIjogIteg15TXnNeZINeU15fXkdeo15QiLCAiaWNvbiI6ICLwn6egIiwgInN1YiI6ICLXnteT15nXoNeZ15XXqiDXlNeX15HXqNeUINeV16nXkNec15XXqiDXlNeR16DXlCIsICJ0aW1lIjogIjMiLCAiYnRuIjogIteQ15nXqdeV16gg15XXlNee16nXmiDihpAiLCAiaGFzUkMiOiB0cnVlLCAicmNUZXh0IjogIten16jXkNeq15kg15XXlNeR16DXqteZIiwgImRpc2NsYWltZXIiOiAi15TXqdeQ15zXldeqINeg15XXoteT15Ug15zXoteW15XXqCDXnNeaINec15TXkdeZ158uINeU16rXqdeV15HXldeqINeQ15nXoNefINeg16nXnteo15XXqiDXkdeq15nXpyDXlNei15XXkdeTLiIsICJwcm9jZXNzIjogIm9uYm9hcmRpbmciLCAic3RlcEN1ciI6ICI0IiwgInN0ZXBUb3RhbCI6ICI2IiwgImluZm9TZWNzIjogW3sidHlwZSI6ICJ0ZXh0IiwgImNvbnRlbnQiOiAi16HXmdeg15DXnCDXnteX15XXmdeR16og15zXodeR15nXkdeqINei15HXldeT15Qg15HXmNeV15fXlCDXldee15vXkdeT16ouINeU15jXqNeT15Qg157Xmdeg15nXqiDigJMg15vXldec15wg15TXoteo15XXqiwg15TXptei15XXqiDXkNeVINeo157XmdeW15XXqiDigJMg15DXmdeg15Qg157Xp9eV15HXnNeqINeR16nXldedINeQ15XXpNefLiJ9LCB7InR5cGUiOiAiYXJyb3dzIiwgIml0ZW1zIjogWyLXpNeg15nXmdeUINeZ16nXmdeo15Qg15zXntee15XXoNeUIiwgIteq15nXkdeqINeT15nXldeV15cg15DXoNeV16DXmdee15nXqiIsICLXm9ecINek16DXmdeZ15Qg16DXkdeT16fXqiDXkdeT15nXoden16jXmNeZ15XXqiJdfSwgeyJ0eXBlIjogImNvbnRhY3QiLCAidGl0bGUiOiAi157XnteV16DXlCDXnNee16DXmdei16og15TXmNeo15PXlCIsICJuYW1lIjogIteo15XXoNeZ16og15vXlNefIiwgImVtYWlsIjogInJvbml0QHN5bmVsLmNvLmlsIn1dLCAicXVlc3Rpb25zIjogW3siaWNvbiI6ICLwn6egIiwgInRpdGxlIjogItep15DXnNeqINeU15HXoNeUIiwgInF1ZXN0aW9uIjogItei15XXkdeTL9eqINeX15PXqdeUINee16fXkdec16og157Xl9ee15DXlCDXotecINeU157XqNeQ15Qg16nXnNeUINeb15wg15HXlden16guINeW15Q6IiwgImFuc3dlcnMiOiBbeyJ0ZXh0IjogIteR16HXk9eoINeS157XldeoIiwgInR5cGUiOiAibmV1dHJhbCJ9LCB7InRleHQiOiAi16rXnNeV15kg15HXoteV15HXk9eqIiwgInR5cGUiOiAid3JvbmciLCAiZmVlZGJhY2siOiAi15zXkCDXkdeT15nXldenIOKAkyDXnteX157XkNeV16og15fXldeW16jXldeqLCDXktedINeR15vXldeV16DXlCDXmNeV15HXlCwg15nXm9eV15zXldeqINec15TXmdeV16og157XmNeo15nXk9eV16og15XXmdepINec15PXldeV15cuIn0sIHsidGV4dCI6ICLXnNeQINeR16HXk9eoIOKAkyDXmdepINec15PXldeV15ciLCAidHlwZSI6ICJjb3JyZWN0IiwgImZlZWRiYWNrIjogIteg15vXldefISDwn46JINeS150g157Xl9ee15DXldeqINeX15XXlteo15XXqiDXotecINee16jXkNeUINeZ15vXldec15XXqiDXnNeU15nXl9ep15Eg15TXmNeo15PXlC4g16rXnteZ15Mg15DXpNep16gg15zXpNeg15XXqiDXnNee157Xldeg15QuIn1dfV0sICJzYXZlZEF0IjogIjIwMjYtMDYtMjhUMDc6MjE6MjMuMzYzWiJ9LCAic3VydmV5X9eo15DXmdeV158g16LXlteZ15HXlCI6IHsibmFtZSI6ICLXqNeQ15nXldefINei15bXmdeR15QiLCAiaWNvbiI6ICIiLCAic3ViIjogItep15nXqteV16Mg15TXl9eV15XXmdeUINep15zXmiDXnNek16DXmSDXodeZ15XXnSDXlNeU16LXoden15QiLCAidGltZSI6ICIyIiwgImJ0biI6ICLXqdec15cg15XXqteV15PXlCDihpAiLCAicHJvY2VzcyI6ICJvZmZib2FyZGluZyIsICJzdGVwQ3VyIjogIjEiLCAic3RlcFRvdGFsIjogIjYiLCAicXVlc3Rpb25zIjogW3sidHlwZSI6ICJyYWRpbyIsICJ0ZXh0IjogItee15Qg15TXodeZ15HXlCDXlNei15nXp9eo15nXqiDXnNei15bXmdeR15Q/IiwgImljb24iOiAi4p2TIiwgInN1YnRleHQiOiAiIiwgInJlcXVpcmVkIjogdHJ1ZSwgIm9wdHMiOiBbIteU15bXk9ee16DXldeqINee16fXpteV16LXmdeqINeY15XXkdeUINeZ15XXqteoIiwgItep15vXqCDXldeq16DXkNeZ150iLCAi16DXmdeU15XXnCDXldeZ15fXodeZ150g15HXoteR15XXk9eUIiwgIteQ15nXlteV158g15HXmdeqLdei15HXldeT15QiLCAi157XoteR16gg15LXmdeQ15XXkteo16TXmSIsICLXkNeX16giXX0sIHsidHlwZSI6ICJzdGFycyIsICJ0ZXh0IjogIteQ15nXmiDXlNeZ15nXqiDXnteT16jXkteqINeQ16og15TXl9eV15XXmdeUINep15zXmiDXkdeh15nXoNeQ15wg15HXodeaINeU15vXnD8iLCAiaWNvbiI6ICLirZAiLCAic3VidGV4dCI6ICIiLCAicmVxdWlyZWQiOiB0cnVlLCAic3RhcnMiOiA1LCAic2VsU3RhciI6IDB9LCB7InR5cGUiOiAic2NhbGUiLCAidGV4dCI6ICLXnteUINeQ16DXl9eg15Ug15nXm9eV15zXmdedINec16nXpNeoPyIsICJpY29uIjogIvCfk4oiLCAic3VidGV4dCI6ICIiLCAicmVxdWlyZWQiOiBmYWxzZSwgInNjYWxlTWF4IjogMTAsICJzY2FsZUxvdyI6ICLXm9ec15XXnSIsICJzY2FsZUhpZ2giOiAi15TXm9ecIiwgInNlbFNjYWxlIjogbnVsbH0sIHsidHlwZSI6ICJ0ZXh0IiwgInRleHQiOiAi157Xmdec15nXnSDXkNeX16jXldeg15XXqiDXqdeq16jXpteUL9eZINec15TXldeh15nXoz8iLCAiaWNvbiI6ICLwn5KsIiwgInN1YnRleHQiOiAi15DXldek16bXmdeV16DXnNeZLiDXlNeU16LXqNeV16og16DXqdec15fXldeqINecLUhSINeR15zXkdeTLiIsICJyZXF1aXJlZCI6IGZhbHNlLCAicGxhY2Vob2xkZXIiOiAi15vXnCDXk9eR16gg16nXqteo16bXlC/XmSDXnNep16rXoy4uLiJ9XSwgInNhdmVkQXQiOiAiMjAyNi0wNi0yOFQwNzoyMToyNC41MzlaIn0sICJpbmZvX9eY15XXpNehIDE2MSDigJMg15LXnteoINeX16nXkdeV158iOiB7Im5hbWUiOiAi15jXldek16EgMTYxIOKAkyDXktee16gg15fXqdeR15XXnyIsICJpY29uIjogIiIsICJzdWIiOiAi16HXmdeb15XXnSDXoNeq15XXoNeZINeS157XqCDXlNeX16nXkdeV158g157XlNee16LXqNeb16oiLCAidGltZSI6ICIyIiwgImJ0biI6ICLXkNeZ16nXldeoINeV15TXntep15og4oaQIiwgImhhc1JlYWRDb25maXJtIjogdHJ1ZSwgInJlYWRDb25maXJtVGV4dCI6ICLXp9eo15DXqteZINeV15TXkdeg16rXmSDXkNeqINeU157Xodee15og15TXntec15AiLCAiaGFzU2lnbmF0dXJlIjogdHJ1ZSwgImhhc0RvY0J0biI6IHRydWUsICJwcm9jZXNzIjogIm9mZmJvYXJkaW5nIiwgInN0ZXBDdXIiOiAiMiIsICJzdGVwVG90YWwiOiAiNiIsICJzZWN0aW9ucyI6IFt7InR5cGUiOiAiZGIiLCAidGl0bGUiOiAi15AuINeg16rXldeg15kg16nXm9eoIiwgInJvd3MiOiBbeyJsYWJlbCI6ICLXkdeo15XXmNeVINeX15XXk9epINeQ15fXqNeV158iLCAidmFsdWUiOiAiMTgsMDAwIiwgInR5cGUiOiAiY3VycmVuY3kiLCAiZGJGaWVsZCI6ICJsYXN0X2dyb3NzIn0sIHsibGFiZWwiOiAi16TXmdem15XXmdeZINek15nXmNeV16jXmdefIiwgInZhbHVlIjogIjI0LDUwMCIsICJ0eXBlIjogImN1cnJlbmN5IiwgImRiRmllbGQiOiAic2V2ZXJhbmNlIn0sIHsibGFiZWwiOiAi15nXqteo16og15nXnteZINeX15XXpNep15QiLCAidmFsdWUiOiAiMTIiLCAidHlwZSI6ICJkYXlzIiwgImRiRmllbGQiOiAidmFjYXRpb25fZGF5cyJ9LCB7ImxhYmVsIjogIteZ16rXqNeqINeZ157XmSDXnteX15zXlCIsICJ2YWx1ZSI6ICI0IiwgInR5cGUiOiAiZGF5cyIsICJkYkZpZWxkIjogInNpY2tfZGF5cyJ9LCB7ImxhYmVsIjogItee15XXoteTINep15fXqNeV16gg16TXoNeh15nXlC/Xp9eV16TXldeqIiwgInZhbHVlIjogIjE1INeR15nXldeg15kgMjAyNiIsICJ0eXBlIjogImRhdGVfY2FsYyIsICJkYkZpZWxkIjogInBlbnNpb25fcmVsZWFzZV9kYXRlIiwgImNhbGNGb3JtdWxhIjogInRlcm1pbmF0aW9uX2RhdGUgKyAzMGQifV19LCB7InR5cGUiOiAiaW5mbyIsICJ0aXRsZSI6ICIiLCAidGV4dCI6ICLXlNeg16rXldeg15nXnSDXoNep15zXpNeZ150g15DXldeY15XXnteY15nXqiDXnteU157Xoteo15vXqi4g15HXnteZ15PXlCDXldeZ16kg15DXmS3XlNeq15DXnteULCDXpNeg15kg15zXl9ep15Eg15TXqdeb16gg15zXpNeg15kg15TXl9eq15nXnteULiJ9LCB7InR5cGUiOiAiZG9jIiwgInRpdGxlIjogIiIsICJidG5UZXh0IjogItem16TXmdeZ15Qg15HXnteh157XmiDXlNee15zXkCDwn5OEIiwgImJ0bk5vdGUiOiAi15nXqSDXnNek16rXldeXINeV15zXktec15XXnCDXkNeqINeU157Xodee15og15TXntec15Ag15zXpNeg15kg15TXl9eq15nXnteUIn0sIHsidHlwZSI6ICJ0ZXh0IiwgInRpdGxlIjogIteSLiDXp9eV16TXldeqINeS157XnCDXldek16DXodeZ15QiLCAiY29udGVudCI6ICLXlNeb16HXpNeZ150g15nXldei157Xk9eVINec16jXqdeV16og15TXoteV15HXk9eqINeR15nXldedIDE1INeR15nXldeg15kgMjAyNi5cblxuKirXky4g15DXmdep15XXqNeZ150qKlxu15DXoNeZINee15DXqdeo16og15vXmSDXp9eZ15HXnNeq15kg15DXqiDXm9ecINeU157XkteZ16Ig15zXmSDXoteR15XXqCDXqten15XXpNeqINei15HXldeT16rXmSDXkdeh15nXoNeQ15wg15HXolwi154uIn1dLCAic2F2ZWRBdCI6ICIyMDI2LTA2LTI4VDA3OjIxOjI1LjY5OVoifSwgInBlbnNpb25f15TXpteY16jXpNeV16og15zXpNeg16HXmdeUIjogeyJzYXZlZEF0IjogIjIwMjYtMDYtMjhUMDc6MjE6MjYuODcyWiIsICJmTmFtZSI6ICLXlNem15jXqNek15XXqiDXnNek16DXodeZ15QiLCAiZlN1YiI6ICLXkdeX15nXqNeqINee16HXnNeV15wg15XXpteZ16jXldejINec16fXqNefINek16DXodeZ15QiLCAiZlRpbWUiOiAiMiIsICJxMXRleHQiOiAi15TXkNedINeZ16kg15zXmiDXkdeZ15jXldeXINek16DXodeZ15XXoNeZINek16LXmdecPyIsICJxMXllcyI6ICLXm9efLCDXmdepINec15kg15HXmdeY15XXlyDXpNeg16HXmdeV16DXmSDXpNei15nXnCIsICJxMW5vIjogItec15AsINeQ15nXnyDXnNeZINeR15nXmNeV15cg16TXoNeh15nXldeg15kiLCAicTJ0ZXh0IjogIteU15DXnSDXqteo16bXlC/XmSDXnNeU157XqdeZ15og16LXnSDXkNeV16rXlSDXkdeZ15jXldeXPyIsICJxMnllcyI6ICLXm9efLCDXqNeV16bXlCDXnNeU157XqdeZ15og16LXnSDXlNeR15nXmNeV15cg15TXp9eZ15nXnSIsICJxMm5vIjogItec15AsINeQ16LXkdeV16gg15zXpNeg16HXmdeUINeU15DXqNeS15XXoNeZ16oiLCAicTNpbmZvIjogItee15zXkC/XmSDXkNeqINek16jXmNeZINeU15HXmdeY15XXlyDXlNek16DXodeZ15XXoNeZINeU16fXmdeZ150uINeg16bXmdeSIEhSINeZ16bXldeoINen16nXqCDXnNeQ15nXnteV16ouIiwgImYxbGFiZWwiOiAi16nXnSDXl9eR16jXqiDXlNeR15nXmNeV15cgLyDXp9eo158g15TXpNeg16HXmdeUIiwgImYybGFiZWwiOiAi157Xodek16gg16TXldec15nXodeUIC8g15fXqdeR15XXnyIsICJmM2xhYmVsIjogItep150g16HXldeb158g15TXkdeZ15jXldeXIiwgImRwTmFtZSI6ICLXnteg15XXqNeUINee15HXmNeX15nXnSDXpNeg16HXmdeUIiwgImRwRW1wbG95ZWUiOiAiNiUiLCAiZHBFbXBsb3llciI6ICI2LjUlIiwgImRwU2V2ZXJhbmNlIjogIjguMzMlIiwgImRwQ29uZmlybVRleHQiOiAi15DXoNeZINee15DXqdeoL9eqINek16rXmdeX16og15fXqdeR15XXnyDXpNeg16HXmdeUINeR16fXqNefINeU16BcItecINeR16rXoNeQ15nXnSDXlNee16TXldeo15jXmdedLiIsICJmUHJvY2VzcyI6ICJvbmJvYXJkaW5nIiwgImZTdGVwQ3VyIjogIjYiLCAiZlN0ZXBUb3RhbCI6ICI2IiwgIm5hbWUiOiAi15TXpteY16jXpNeV16og15zXpNeg16HXmdeUIn0sICJjb25kX9en15HXnNeqINem15nXldeTIjogeyJuYW1lIjogIten15HXnNeqINem15nXldeTIiwgImljb24iOiAiIiwgInN1YiI6ICLXkNep16jXlSDXp9eR15zXqiDXlNem15nXldeTLiDXkNedINeZ16kg16rXp9ec15Qg4oCUINeq15DXqNeVINeQ15XXqteULiIsICJ0aW1lIjogIjIiLCAiYnRuIjogIteQ15nXqdeV16gg15XXlNee16nXmiDihpAiLCAicHJvY2VzcyI6ICJvbmJvYXJkaW5nIiwgInN0ZXBDdXIiOiAiNSIsICJzdGVwVG90YWwiOiAiNiIsICJxdWVzdGlvbnMiOiBbeyJ0ZXh0IjogItee15fXqdeRINeg15nXmdeTIiwgImljb24iOiAi8J+SuyIsICJzdWJ0ZXh0IjogIiIsICJyZXF1aXJlZCI6IHRydWUsICJoYXNUZXh0IjogZmFsc2UsICJoYXNVcGxvYWQiOiB0cnVlLCAiaGFzQ2FtZXJhIjogdHJ1ZSwgInRleHRQbGFjZWhvbGRlciI6ICLXqteQ16gv15kg15DXqiDXlNeq16fXnNeULi4uIiwgInllc0xhYmVsIjogIten15nXkdec16rXmSDinJMiLCAibm9MYWJlbCI6ICLXmdepINeq16fXnNeUIOKaoO+4jyJ9LCB7InRleHQiOiAi15jXnNek15XXnyDXoNeZ15nXkyIsICJpY29uIjogIvCfk7EiLCAic3VidGV4dCI6ICIiLCAicmVxdWlyZWQiOiB0cnVlLCAiaGFzVGV4dCI6IHRydWUsICJoYXNVcGxvYWQiOiBmYWxzZSwgImhhc0NhbWVyYSI6IHRydWUsICJ0ZXh0UGxhY2Vob2xkZXIiOiAi16rXkNeoL9eZINeQ16og15TXqten15zXlC4uLiIsICJ5ZXNMYWJlbCI6ICLXp9eZ15HXnNeq15kg4pyTIiwgIm5vTGFiZWwiOiAi15nXqSDXqten15zXlCDimqDvuI8ifSwgeyJ0ZXh0IjogIteq15Ig15vXoNeZ16HXlCDXnNee16nXqNeTIiwgImljb24iOiAi8J+qqiIsICJzdWJ0ZXh0IjogIiIsICJyZXF1aXJlZCI6IHRydWUsICJoYXNUZXh0IjogdHJ1ZSwgImhhc1VwbG9hZCI6IGZhbHNlLCAiaGFzQ2FtZXJhIjogZmFsc2UsICJ0ZXh0UGxhY2Vob2xkZXIiOiAi15TXodeR16gv15kg157XlCDXp9eo15QuLi4iLCAieWVzTGFiZWwiOiAi16fXmdeR15zXqteZIOKckyIsICJub0xhYmVsIjogIteZ16kg16rXp9ec15Qg4pqg77iPIn0sIHsidGV4dCI6ICLXkteZ16nXlCDXnNee16LXqNeb15XXqiIsICJpY29uIjogIvCflqXvuI8iLCAic3VidGV4dCI6ICIiLCAicmVxdWlyZWQiOiBmYWxzZSwgImhhc1RleHQiOiB0cnVlLCAiaGFzVXBsb2FkIjogZmFsc2UsICJoYXNDYW1lcmEiOiBmYWxzZSwgInRleHRQbGFjZWhvbGRlciI6ICLXlNeh15HXqC/XmSDXnteUINeX16HXqC4uLiIsICJ5ZXNMYWJlbCI6ICLXlNeV16TXotec15Qg4pyTIiwgIm5vTGFiZWwiOiAi15HXoteZ15Qg4pqg77iPIn1dLCAic2F2ZWRBdCI6ICIyMDI2LTA2LTI4VDA5OjAwOjAwLjAwMFoifSwgImNvbmRf15TXl9eW16jXqiDXpteZ15XXkyI6IHsibmFtZSI6ICLXlNeX15bXqNeqINem15nXldeTIiwgImljb24iOiAiIiwgInN1YiI6ICLXodee16DXlSDXkNeZ15zXlSDXpNeo15nXmNeZ150g15TXldeX15bXqNeVLiDXkNedINeZ16kg16DXltenIOKAlCDXqteQ16jXlSDXkNeV16rXlS4iLCAidGltZSI6ICIyIiwgImJ0biI6ICLXkNeZ16nXldeoINeV15TXntep15og4oaQIiwgInByb2Nlc3MiOiAib2ZmYm9hcmRpbmciLCAic3RlcEN1ciI6ICIzIiwgInN0ZXBUb3RhbCI6ICI2IiwgInF1ZXN0aW9ucyI6IFt7InRleHQiOiAi157Xl9ep15Eg16DXmdeZ15MiLCAiaWNvbiI6ICLwn5K7IiwgInN1YnRleHQiOiAiIiwgInJlcXVpcmVkIjogdHJ1ZSwgImhhc1RleHQiOiB0cnVlLCAiaGFzVXBsb2FkIjogdHJ1ZSwgImhhc0NhbWVyYSI6IHRydWUsICJ0ZXh0UGxhY2Vob2xkZXIiOiAi16rXkNeoL9eZINeQ16og157XpteRINeU157Xl9ep15EuLi4iLCAieWVzTGFiZWwiOiAi15TXldeX15bXqCDinJMiLCAibm9MYWJlbCI6ICLXmdepINeg15bXpyDimqDvuI8ifSwgeyJ0ZXh0IjogIteY15zXpNeV158g16DXmdeZ15MiLCAiaWNvbiI6ICLwn5OxIiwgInN1YnRleHQiOiAiIiwgInJlcXVpcmVkIjogdHJ1ZSwgImhhc1RleHQiOiBmYWxzZSwgImhhc1VwbG9hZCI6IHRydWUsICJoYXNDYW1lcmEiOiB0cnVlLCAidGV4dFBsYWNlaG9sZGVyIjogIteq15DXqC/XmSDXkNeqINee16bXkSDXlNeY15zXpNeV158uLi4iLCAieWVzTGFiZWwiOiAi15TXldeX15bXqCDinJMiLCAibm9MYWJlbCI6ICLXmdepINeg15bXpyDimqDvuI8ifSwgeyJ0ZXh0IjogIteq15Ig15vXoNeZ16HXlCDXnNee16nXqNeTIiwgImljb24iOiAi8J+qqiIsICJzdWJ0ZXh0IjogIiIsICJyZXF1aXJlZCI6IHRydWUsICJoYXNUZXh0IjogdHJ1ZSwgImhhc1VwbG9hZCI6IGZhbHNlLCAiaGFzQ2FtZXJhIjogZmFsc2UsICJ0ZXh0UGxhY2Vob2xkZXIiOiAi15TXodeR16gv15kg157XlCDXp9eo15QuLi4iLCAieWVzTGFiZWwiOiAi15TXldeX15bXqCDinJMiLCAibm9MYWJlbCI6ICLXmdepINeg15bXpyDimqDvuI8ifSwgeyJ0ZXh0IjogIteS15nXqdeUINec157Xoteo15vXldeqIiwgImljb24iOiAi8J+SuyIsICJzdWJ0ZXh0IjogIiIsICJyZXF1aXJlZCI6IGZhbHNlLCAiaGFzVGV4dCI6IGZhbHNlLCAiaGFzVXBsb2FkIjogZmFsc2UsICJoYXNDYW1lcmEiOiBmYWxzZSwgInRleHRQbGFjZWhvbGRlciI6ICIiLCAieWVzTGFiZWwiOiAi15HXldeY15wg4pyTIiwgIm5vTGFiZWwiOiAi15HXoteZ15Qg4pqg77iPIn1dLCAic2F2ZWRBdCI6ICIyMDI2LTA2LTI4VDA5OjAwOjAwLjAwMFoifSwgImNvbmRf15HXp9ep16og157Xm9eq15Eg15TXntec16bXlCI6IHsibmFtZSI6ICLXkden16nXqiDXnteb16rXkSDXlNee15zXpteUIiwgImljb24iOiAiIiwgInN1YiI6ICLXkden16nXlCDXkNeV16TXpteZ15XXoNec15nXqiDXnNee15vXqteRINeU157XnNem15QiLCAidGltZSI6ICIyIiwgImJ0biI6ICLXodeZ15XXnSDXldeU15LXqdeUIOKGkCIsICJwcm9jZXNzIjogIm9mZmJvYXJkaW5nIiwgInN0ZXBDdXIiOiAiNiIsICJzdGVwVG90YWwiOiAiNiIsICJxdWVzdGlvbnMiOiBbeyJ0ZXh0IjogIteU15DXnSDXqteo16bXlC/XmSDXnteb16rXkSDXlNee15zXpteUPyIsICJpY29uIjogIuKtkCIsICJzdWJ0ZXh0IjogItem16LXkyDXkNeV16TXpteZ15XXoNec15kg4oCUINeQ16DXl9eg15Ug157Xntec15nXpteZ150g15zXkden16kuIiwgInJlcXVpcmVkIjogZmFsc2UsICJoYXNUZXh0IjogZmFsc2UsICJoYXNVcGxvYWQiOiBmYWxzZSwgImhhc0NhbWVyYSI6IGZhbHNlLCAiaGFzTm90aWYiOiB0cnVlLCAibm90aWZUZXh0IjogIteU15HXp9ep15Qg16rXmdep15zXlyDXkNeV15jXldee15jXmdeqINec157XoNeU15wuINeU15vXnCDXnteY15XXpNecINeR15PXmdeh16fXqNeY15nXldeqLiIsICJoYXNFbWFpbCI6IHRydWUsICJlbWFpbExhYmVsIjogItec15DXmdeW15Qg157XmdeZ15wg15zXqdec15XXlyDXkNeqINeU157Xm9eq15E/IiwgImVtYWlsUGxhY2Vob2xkZXIiOiAieW91ckBlbWFpbC5jb20iLCAieWVzTGFiZWwiOiAi15vXnywg16nXnNeX15Ug15HXp9ep15Qg15zXnteg15TXnCIsICJub0xhYmVsIjogItec15AsINeq15XXk9eUIiwgInRleHRQbGFjZWhvbGRlciI6ICIiLCAib3Blbk9uWWVzIjogdHJ1ZX1dLCAic2F2ZWRBdCI6ICIyMDI2LTA2LTI4VDA5OjAwOjAwLjAwMFoifSwgImYxMDFf15jXldek16EgMTAxIOKAlCDXp9ec15nXmNeqINei15XXkdeTIjogeyJuYW1lIjogIteY15XXpNehIDEwMSDigJQg16fXnNeZ15jXqiDXoteV15HXkyIsICJzdWIiOiAi16bXmdec15XXnSDXqte015Yg15XXodek15cgKyDXqdeQ15zXldeqINep15vXqCIsICJoYXNTaWciOiBmYWxzZSwgImhhc0NvbmZpcm0iOiB0cnVlLCAiY29uZmlybVRleHQiOiAi15DXoNeZINee15DXqdeoL9eqINep15TXpNeo15jXmdedINep157Xodeo16rXmSDXoNeb15XXoNeZ150iLCAicHJvY2VzcyI6ICJvbmJvYXJkaW5nIiwgImZpZWxkc0NvdW50IjogNSwgInNhdmVkQXQiOiAiMjAyNi0wNi0yOFQwOTowMDowMC4wMDBaIn19")||{}; var CLEAN=dec("WyJxYV90ZW1wbGF0ZV/Xp9eR15zXqiDXpteZ15XXkyIsICJxYV90ZW1wbGF0ZV/XlNeX15bXqNeqINem15nXldeTIiwgInFhX3RlbXBsYXRlX9eR16fXqdeqINee15vXqteRINeU157XnNem15QiXQ==")||[]; var OLDOCR=dec("WyJvY3Jf15jXldek16EgMTAxIOKAlCDXp9ec15nXmNeqINei15XXkdeTIiwgIm9jcl/Xl9eV15bXlCDXlNei16HXp9eUIiwgIm9jcl/Xodei15nXoyAxNCIsICJvY3Jf16DXlNec15kg15TXl9eR16jXlCIsICJvY3Jf16fXkdec16og16bXmdeV15Mg15XXlNeo16nXkNeV16oiLCAib2NyX9eU16bXmNeo16TXldeqINec16TXoNeh15nXlCIsICJvY3Jf16jXqdeZ157XqiDXp9ec15nXmNeUIOKAlCDXmNek16HXmdedINec157Xmdec15XXmSIsICJvY3Jf16jXkNeZ15XXnyDXoteW15nXkdeUIiwgIm9jcl/XmNeV16TXoSAxNjEg4oCUINeS157XqCDXl9ep15HXldefIiwgIm9jcl/XlNeX15bXqNeqINem15nXldeTIiwgIm9jcl/XnNeV17TXliDXmdeV150g15DXl9eo15XXnyIsICJvY3Jf15fXpNeZ16TXlCDXnNee15fXnNeZ16Mv15QiLCAib2NyX9eR16fXqdeqINee15vXqteRINeU157XnNem15QiXQ==")||[];
+  function go(){try{
+    if(!localStorage.getItem("cleanup_v7")){
+      var rm=[]; for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k&&k.indexOf("onoff_")===0)rm.push(k);}
+      rm.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+      CLEAN.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+      OLDOCR.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+      localStorage.setItem("cleanup_v7","1");
+    }
+    if(!localStorage.getItem("cleanup_v9")){
+      var CONDNAMES=["קבלת ציוד","החזרת ציוד","בקשת מכתב המלצה"];
+      var rm9=[];
+      for(var j=0;j<localStorage.length;j++){ var kk=localStorage.key(j); if(!kk)continue;
+        if(kk.indexOf("onoff_")===0){rm9.push(kk);continue;}
+        if(kk.indexOf("cond_")===0)continue;
+        try{ var rec=JSON.parse(localStorage.getItem(kk)); if(rec&&rec.name&&CONDNAMES.indexOf(rec.name)>=0) rm9.push(kk); }catch(e){}
+      }
+      rm9.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+      localStorage.setItem("cleanup_v9","1");
+    }
+    if(!localStorage.getItem("seed_v10")){
+      Object.keys(SEED).forEach(function(k){ if(localStorage.getItem(k)===null) localStorage.setItem(k, JSON.stringify(SEED[k])); });
+      localStorage.setItem("seed_v10","1");
+    }
+    if(typeof renderSaved==="function"){try{renderSaved();}catch(e){}}
+  }catch(e){}}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
+})();</script>
+</body>
+</html>
