@@ -394,10 +394,15 @@ function renderEditor(){
     var chkRole=makeCheckRow('בחירת תפקיד אחראי', q.hasRoleSelect||false, function(v){questions[i].hasRoleSelect=v;renderEditor();render();});
     branch.appendChild(chkRole);
     if(q.hasRoleSelect){
-      var roleLblInp=document.createElement('input');roleLblInp.placeholder='תווית הכפתור';roleLblInp.value=q.roleSelectLabel||'בחר תפקיד אחראי';
-      roleLblInp.style.cssText='margin-top:4px;margin-right:20px;width:calc(100% - 20px);';
-      (function(idx){roleLblInp.oninput=function(){questions[idx].roleSelectLabel=this.value;render();};})(i);
-      branch.appendChild(roleLblInp);
+      var roleBtnEd=document.createElement('button');
+      roleBtnEd.type='button';
+      roleBtnEd.style.cssText='margin-top:4px;margin-right:20px;width:calc(100% - 20px);padding:7px 10px;font-size:12px;border:1px solid #C7D2FE;border-radius:8px;background:#EEF2FF;color:#4338CA;cursor:pointer;font-family:inherit;text-align:right;display:flex;align-items:center;justify-content:space-between;';
+      var setRoleTxt=function(){roleBtnEd.innerHTML='<span>'+(q.responsibleRole?'תפקיד אחראי: '+q.responsibleRole:'בחר תפקיד אחראי…')+'</span><span style="color:#9CA3AF">▾</span>';};
+      setRoleTxt();
+      (function(idx){roleBtnEd.onclick=function(){
+        openRolePicker(function(role){questions[idx].responsibleRole=role;renderEditor();render();});
+      };})(i);
+      branch.appendChild(roleBtnEd);
     }
 
     fields.appendChild(branch);
@@ -509,24 +514,6 @@ function render(){
       emailSec.appendChild(emailLbl);emailSec.appendChild(emailInp);
       yesContent.appendChild(emailSec);
     }
-    if(q.hasRoleSelect){
-      var roleSec=document.createElement('div');
-      var roleBtn=document.createElement('button');
-      roleBtn.type='button';
-      roleBtn.style.cssText='width:100%;padding:12px 14px;font-size:13px;border:1.5px solid #E5E7EB;border-radius:10px;background:white;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;color:#6B7280;text-align:right;';
-      var roleTxt=document.createElement('span');roleTxt.textContent='👤 '+(q.roleSelectLabel||'בחר תפקיד אחראי');
-      var roleChev=document.createElement('span');roleChev.textContent='▾';roleChev.style.color='#9CA3AF';
-      roleBtn.appendChild(roleTxt);roleBtn.appendChild(roleChev);
-      roleBtn.onclick=function(){
-        openRolePicker(function(role){
-          roleTxt.textContent='👤 '+role;
-          roleBtn.style.borderColor='var(--accent)';
-          roleBtn.style.color='var(--text)';
-        });
-      };
-      roleSec.appendChild(roleBtn);
-      yesContent.appendChild(roleSec);
-    }
 
     (function(yb,nb,yc,openOnYes){
       yb.onclick=function(){
@@ -602,7 +589,7 @@ function exportJSON(){
         dbField: q.dbField || '',
         filler: q.filler || 'E_',
         hasRoleSelect: q.hasRoleSelect || false,
-        roleSelectLabel: q.roleSelectLabel || '',
+        responsibleRole: q.responsibleRole || '',
         required: q.required !== false,
         notifyEmail: q.notifyEmail || '',
       };
