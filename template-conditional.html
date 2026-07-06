@@ -213,6 +213,12 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
         <option value="payroll">חשב שכר</option>
       </select>
     </div>
+
+    <div class="ep-sec">
+      <label>רשימת תפקידים לבחירה</label>
+      <p style="font-size:10px;color:#9CA3AF;margin-bottom:5px;line-height:1.5;">תפקיד בכל שורה. משמש בכל שאלה שבה מסומן "בחירת תפקיד אחראי".</p>
+      <textarea class="ep-inp" id="roleListInput" rows="8" style="resize:vertical;direction:rtl;" oninput="updateRoleList(this.value)"></textarea>
+    </div>
   
     <div class="divider"></div>
 
@@ -284,8 +290,12 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
 <div class="toast" id="toastEl"></div>
 
 <script>
+// רשימת תפקידים ארגוניים (job titles) לבחירה בענף "לא"
+// הערה למפתח: בפרודקשן למשוך מטבלת התפקידים הארגונית של הרמוני (endpoint), לא מרשימה קשיחה
+var RESPONSIBLE_ROLES = ['מנהל','מפתח','נהג','נציג מכירות','איש תמיכה','מנהל חשבונות','טכנאי','אנליסט','מעצב','מזכירה'];
+
 var questions = [
-  {text:'טלפון נייד', icon:'📱', subtext:'', required:true,  hasText:false, hasUpload:true,  hasCamera:true,  textPlaceholder:'תאר את מצב הטלפון...', yesLabel:'הוחזר ✓', noLabel:'יש נזק ⚠️'},
+  {text:'טלפון נייד', icon:'📱', subtext:'', required:true,  hasText:false, hasUpload:true,  hasCamera:true,  hasRoleSelect:true, roleSelectLabel:'בחר תפקיד אחראי', textPlaceholder:'תאר את מצב הטלפון...', yesLabel:'הוחזר ✓', noLabel:'יש נזק ⚠️'},
   {text:'תג כניסה למשרד', icon:'🪪', subtext:'', required:true,  hasText:true,  hasUpload:false, hasCamera:false, textPlaceholder:'הסבר מה קרה...', yesLabel:'הוחזר ✓', noLabel:'יש נזק ⚠️'},
   {text:'גישה למערכות', icon:'💻', subtext:'', required:false, hasText:false, hasUpload:false, hasCamera:false, textPlaceholder:'', yesLabel:'בוטל ✓', noLabel:'בעיה ⚠️'},
   {text:'האם תרצה/י מכתב המלצה?', icon:'⭐', subtext:'צעד אופציונלי — אנחנו ממליצים לבקש.', required:false, hasText:false, hasUpload:false, hasCamera:false, hasNotif:true, notifText:'הבקשה תישלח אוטומטית למנהל. הכל מטופל בדיסקרטיות.', hasEmail:true, emailLabel:'לאיזה מייל לשלוח את המכתב?', emailPlaceholder:'your@email.com', yesLabel:'כן, שלחו בקשה למנהל', noLabel:'לא, תודה', textPlaceholder:'', openOnYes:true},
@@ -379,6 +389,15 @@ function renderEditor(){
       emailLblInp.style.cssText='margin-top:4px;margin-right:20px;width:calc(100% - 20px);';
       (function(idx){emailLblInp.oninput=function(){questions[idx].emailLabel=this.value;render();};})(i);
       branch.appendChild(emailLblInp);
+    }
+    // Responsible role selector option
+    var chkRole=makeCheckRow('בחירת תפקיד אחראי', q.hasRoleSelect||false, function(v){questions[i].hasRoleSelect=v;renderEditor();render();});
+    branch.appendChild(chkRole);
+    if(q.hasRoleSelect){
+      var roleLblInp=document.createElement('input');roleLblInp.placeholder='תווית הכפתור';roleLblInp.value=q.roleSelectLabel||'בחר תפקיד אחראי';
+      roleLblInp.style.cssText='margin-top:4px;margin-right:20px;width:calc(100% - 20px);';
+      (function(idx){roleLblInp.oninput=function(){questions[idx].roleSelectLabel=this.value;render();};})(i);
+      branch.appendChild(roleLblInp);
     }
 
     fields.appendChild(branch);
@@ -490,6 +509,24 @@ function render(){
       emailSec.appendChild(emailLbl);emailSec.appendChild(emailInp);
       yesContent.appendChild(emailSec);
     }
+    if(q.hasRoleSelect){
+      var roleSec=document.createElement('div');
+      var roleBtn=document.createElement('button');
+      roleBtn.type='button';
+      roleBtn.style.cssText='width:100%;padding:12px 14px;font-size:13px;border:1.5px solid #E5E7EB;border-radius:10px;background:white;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;color:#6B7280;text-align:right;';
+      var roleTxt=document.createElement('span');roleTxt.textContent='👤 '+(q.roleSelectLabel||'בחר תפקיד אחראי');
+      var roleChev=document.createElement('span');roleChev.textContent='▾';roleChev.style.color='#9CA3AF';
+      roleBtn.appendChild(roleTxt);roleBtn.appendChild(roleChev);
+      roleBtn.onclick=function(){
+        openRolePicker(function(role){
+          roleTxt.textContent='👤 '+role;
+          roleBtn.style.borderColor='var(--accent)';
+          roleBtn.style.color='var(--text)';
+        });
+      };
+      roleSec.appendChild(roleBtn);
+      yesContent.appendChild(roleSec);
+    }
 
     (function(yb,nb,yc,openOnYes){
       yb.onclick=function(){
@@ -564,6 +601,8 @@ function exportJSON(){
         yesTextPlaceholder: q.textPlaceholder || '',
         dbField: q.dbField || '',
         filler: q.filler || 'E_',
+        hasRoleSelect: q.hasRoleSelect || false,
+        roleSelectLabel: q.roleSelectLabel || '',
         required: q.required !== false,
         notifyEmail: q.notifyEmail || '',
       };
@@ -617,6 +656,41 @@ function loadForm(data){
 var tt=null;
 function toast(msg){var t=document.getElementById('toastEl');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2500);}
 
+/* ── ROLE PICKER ── */
+function updateRoleList(val){
+  RESPONSIBLE_ROLES = val.split('\n').map(function(s){return s.trim();}).filter(function(s){return s;});
+  render();
+}
+function initRoleList(){
+  var ta=document.getElementById('roleListInput');
+  if(ta) ta.value=RESPONSIBLE_ROLES.join('\n');
+}
+function openRolePicker(onSelect){
+  var existing=document.getElementById('rolePickerOverlay');
+  if(existing)existing.remove();
+  var overlay=document.createElement('div');overlay.id='rolePickerOverlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:center;justify-content:center;';
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
+  var box=document.createElement('div');
+  box.style.cssText='background:white;border-radius:14px;padding:18px 20px;width:320px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.15);direction:rtl;font-family:inherit;';
+  var h=document.createElement('h3');h.textContent='בחר תפקיד אחראי';
+  h.style.cssText='font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:12px;';
+  box.appendChild(h);
+  RESPONSIBLE_ROLES.forEach(function(role){
+    var item=document.createElement('button');item.type='button';item.textContent=role;
+    item.style.cssText='width:100%;padding:11px 14px;font-size:13px;border:1px solid #E5E7EB;border-radius:10px;background:white;cursor:pointer;font-family:inherit;text-align:right;color:#1a1a1a;margin-bottom:6px;transition:all .12s;';
+    item.onmouseover=function(){item.style.background='#EEF2FF';item.style.borderColor='#4F46E5';};
+    item.onmouseout=function(){item.style.background='white';item.style.borderColor='#E5E7EB';};
+    item.onclick=function(){onSelect(role);overlay.remove();};
+    box.appendChild(item);
+  });
+  var cancel=document.createElement('button');cancel.type='button';cancel.textContent='ביטול';
+  cancel.style.cssText='width:100%;padding:9px;font-size:13px;border:1px solid #E5E7EB;border-radius:10px;background:none;cursor:pointer;font-family:inherit;color:#6B7280;margin-top:4px;';
+  cancel.onclick=function(){overlay.remove();};
+  box.appendChild(cancel);
+  overlay.appendChild(box);document.body.appendChild(overlay);
+}
+
 /* ── ICON PICKER ── */
 var ICON_SETS={'כללי':['✅','❌','⚠️','ℹ️','🔔','📌','🔑','🔒','⭐','💡','🎯','✨','🔥'],'אנשים':['👤','👥','👨‍💼','👩‍💼','🤝','👋','🙌'],'עבודה':['💼','📁','📄','📝','📋','📊','🖥️','💻','📱','⌨️','📞'],'זמן':['⏰','⏱️','📅','📆','⌚'],'ציוד':['💻','🖥️','📱','📷','🔋','🔌','🛠️','🔧'],'תקשורת':['📧','💬','📢','📡'],'סימנים':['✓','✗','→','←','★','•','©','®']};
 function showIconPicker(inputEl){
@@ -648,7 +722,7 @@ function showIconPicker(inputEl){
 }
 
 // Init
-updateAssign();renderEditor();render();
+updateAssign();renderEditor();render();initRoleList();
 
 /* DB MAPPING */
 var dbMappings = [];
