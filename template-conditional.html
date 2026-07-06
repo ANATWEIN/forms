@@ -295,9 +295,9 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
 var RESPONSIBLE_ROLES = ['מנהל','מפתח','נהג','נציג מכירות','איש תמיכה','מנהל חשבונות','טכנאי','אנליסט','מעצב','מזכירה'];
 
 var questions = [
-  {text:'טלפון נייד', icon:'📱', subtext:'', required:true,  hasText:false, hasUpload:true,  hasCamera:true,  hasRoleSelect:true, roleSelectLabel:'בחר תפקיד אחראי', textPlaceholder:'תאר את מצב הטלפון...', yesLabel:'הוחזר ✓', noLabel:'יש נזק ⚠️'},
-  {text:'תג כניסה למשרד', icon:'🪪', subtext:'', required:true,  hasText:true,  hasUpload:false, hasCamera:false, textPlaceholder:'הסבר מה קרה...', yesLabel:'הוחזר ✓', noLabel:'יש נזק ⚠️'},
-  {text:'גישה למערכות', icon:'💻', subtext:'', required:false, hasText:false, hasUpload:false, hasCamera:false, textPlaceholder:'', yesLabel:'בוטל ✓', noLabel:'בעיה ⚠️'},
+  {text:'טלפון נייד', icon:'📱', subtext:'', required:true,  hasText:false, hasUpload:true,  hasCamera:true,  hasRoleSelect:true, responsibleRole:'', textPlaceholder:'תאר את מצב הטלפון...', yesLabel:'הוחזר ✓', noLabel:'יש נזק ⚠️'},
+  {text:'תג כניסה למשרד', icon:'🪪', subtext:'', required:true,  hasText:true,  hasUpload:false, hasCamera:false, hasRoleSelect:true, responsibleRole:'', textPlaceholder:'הסבר מה קרה...', yesLabel:'הוחזר ✓', noLabel:'יש נזק ⚠️'},
+  {text:'גישה למערכות', icon:'💻', subtext:'', required:false, hasText:false, hasUpload:false, hasCamera:false, hasRoleSelect:true, responsibleRole:'', textPlaceholder:'', yesLabel:'בוטל ✓', noLabel:'בעיה ⚠️'},
   {text:'האם תרצה/י מכתב המלצה?', icon:'⭐', subtext:'צעד אופציונלי — אנחנו ממליצים לבקש.', required:false, hasText:false, hasUpload:false, hasCamera:false, hasNotif:true, notifText:'הבקשה תישלח אוטומטית למנהל. הכל מטופל בדיסקרטיות.', hasEmail:true, emailLabel:'לאיזה מייל לשלוח את המכתב?', emailPlaceholder:'your@email.com', yesLabel:'כן, שלחו בקשה למנהל', noLabel:'לא, תודה', textPlaceholder:'', openOnYes:true},
 ];
 
