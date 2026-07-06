@@ -386,6 +386,45 @@ function dbMeta(field){
   return SYNEL_DB_MAP[field] || null;
 }
 
+/* רשימת שדות DB לבחירה. משתמש ב-synel-db.js אם נטען, אחרת נופל לרשימת בסיס
+   כדי שהעורך יעבוד גם ללא הקובץ החיצוני. */
+function dbFieldList(){
+  if(typeof SYNEL_DB_FIELDS!=='undefined' && SYNEL_DB_FIELDS.length) return SYNEL_DB_FIELDS;
+  return [
+    {dbField:'EMP_NAME',        labelHe:'שם מלא',            category:'עובד'},
+    {dbField:'EMP_FIRST_NAME',  labelHe:'שם פרטי',           category:'עובד'},
+    {dbField:'EMP_JOB_DESCR',   labelHe:'תיאור תפקיד',       category:'תפקיד'},
+    {dbField:'EMP_DEPARTMENT_DESCR', labelHe:'שם מחלקה',     category:'תפקיד'},
+    {dbField:'EMP_DATE_START',  labelHe:'תאריך תחילת עבודה', category:'תאריכים'},
+    {dbField:'MNG_NAME',        labelHe:'שם מנהל/ת ישיר/ה',  category:'ניהול'}
+  ];
+}
+
+/* בונה תפריט בחירת שדה DB לשורת פרטים. הבחירה קובעת מאיפה מגיע הערך
+   הדינמי מ-Harmony (למשל שם / תפקיד / תאריך התחלה / מנהל ישיר). */
+function buildDBDropdown(currentValue, onChangeFn){
+  var sel=document.createElement('select');
+  sel.style.cssText='flex:1;padding:5px 8px;font-size:11px;border:1px solid #C7D2FE;border-radius:6px;font-family:inherit;outline:none;background:#EEF2FF;color:#4338CA;';
+  var empty=document.createElement('option');
+  empty.value=''; empty.textContent='— טקסט קבוע (ללא שדה DB) —';
+  sel.appendChild(empty);
+  var fields=dbFieldList();
+  var cats={};
+  fields.forEach(function(f){ (cats[f.category||'שדות']=cats[f.category||'שדות']||[]).push(f); });
+  Object.keys(cats).forEach(function(cat){
+    var og=document.createElement('optgroup'); og.label=cat;
+    cats[cat].forEach(function(f){
+      var o=document.createElement('option');
+      o.value=f.dbField; o.textContent=f.labelHe+' — '+f.dbField;
+      if(f.dbField===currentValue) o.selected=true;
+      og.appendChild(o);
+    });
+    sel.appendChild(og);
+  });
+  sel.onchange=function(){ onChangeFn(this.value); };
+  return sel;
+}
+
 function demoMap(){
   var m = Object.assign({}, DEMO[state.processType]||{});
   return m;
@@ -744,8 +783,34 @@ function toast(msg){
   clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('show');},2500);
 }
 
+/* ════════════════════════ SEED — תבניות ברירת מחדל ל"תבניות שמורות" ════════════════════════ */
+/* זורע פעם אחת את תבניות הבסיס (קליטה + סיום העסקה) ל-localStorage,
+   כך שיופיעו ב"תבניות שמורות" מיד. לא דורס תבנית קיימת ולא חוזר על עצמו
+   אחרי מחיקה ידנית (דגל synel_flow_seeded_v1 שאינו מתחיל ב-flow_). */
+function seedDefaultTemplates(){
+  try{
+    if(localStorage.getItem('synel_flow_seeded_v1')) return;
+    Object.keys(PRESETS).forEach(function(type){
+      var p=PRESETS[type];
+      var key='flow_'+p.name;
+      if(localStorage.getItem(key)) return;
+      var s={
+        name:p.name, icon:'🚪', processType:type,
+        preliminary:JSON.parse(JSON.stringify(p.preliminary)),
+        intro:JSON.parse(JSON.stringify(p.intro)),
+        outro:JSON.parse(JSON.stringify(p.outro)),
+        previewPage: p.preliminary.enabled?'prelim':'intro',
+        previewMode:'demo'
+      };
+      localStorage.setItem(key, JSON.stringify(s));
+    });
+    localStorage.setItem('synel_flow_seeded_v1','1');
+  }catch(e){}
+}
+
 /* ════════════════════════ INIT ════════════════════════ */
 (function init(){
+  seedDefaultTemplates();
   // mount assign button
   if(typeof SynelAssign!=='undefined' && SynelAssign.button){
     try{ document.getElementById('assignMount').appendChild(SynelAssign.button()); }catch(e){}
