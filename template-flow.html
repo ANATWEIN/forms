@@ -723,6 +723,7 @@ function exportJSON(){
 }
 
 function saveForm(){
+  state.savedAt = new Date().toISOString();
   try{ localStorage.setItem('flow_'+(state.name||'תהליך'), JSON.stringify(state)); }catch(e){}
   toast('✓ נשמר: "'+(state.name||'תהליך')+'"');
 }
@@ -800,7 +801,8 @@ function seedDefaultTemplates(){
         intro:JSON.parse(JSON.stringify(p.intro)),
         outro:JSON.parse(JSON.stringify(p.outro)),
         previewPage: p.preliminary.enabled?'prelim':'intro',
-        previewMode:'demo'
+        previewMode:'demo',
+        savedAt: new Date().toISOString()
       };
       localStorage.setItem(key, JSON.stringify(s));
     });

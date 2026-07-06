@@ -228,7 +228,8 @@ function loadSavedForms(){
     {p:'pension_',      file:'template-pension.html',    cnt:function(d){return 3;}},
     {p:'cond_',         file:'template-conditional.html', cnt:function(d){return (d.questions||[]).length;}},
     {p:'f101_',         file:'template-101.html',         cnt:function(d){return (d.fieldsCount||5);}},
-    {p:'ocr_',          file:'template-upload-ocr.html', cnt:function(d){return (d.fields||[]).length;}, ocr:true}
+    {p:'ocr_',          file:'template-upload-ocr.html', cnt:function(d){return (d.fields||[]).length;}, ocr:true},
+    {p:'flow_',         file:'template-flow.html',       cnt:function(d){return ((d.intro&&d.intro.details)||[]).length;}, flow:true}
   ];
   var FLOW_MAP={};
   var out=[];
@@ -240,10 +241,16 @@ function loadSavedForms(){
         try{
           var d=JSON.parse(localStorage.getItem(k));
           var nm=d.name||d.fName||d.docTitle||k.slice(st.p.length);
-          var op = st.ocr ? (st.file+'?open='+encodeURIComponent(k))
-                          : (st.file+'?load='+encodeURIComponent(nm));
+          var op = st.ocr  ? (st.file+'?open='+encodeURIComponent(k))
+                  : st.flow ? (st.file+'?open='+encodeURIComponent(nm))
+                            : (st.file+'?load='+encodeURIComponent(nm));
           if(FLOW_MAP[nm]) op = FLOW_MAP[nm];
-          out.push({key:k, name:nm, savedAt:d.savedAt, count:st.cnt(d), open: op});
+          var isFlow=!!st.flow;
+          var desc = isFlow
+            ? ('מעטפת תהליך · '+(d.processType==='offboarding'?'סיום העסקה':'קליטה'))
+            : (st.cnt(d)+' שדות');
+          out.push({key:k, name:nm, savedAt:d.savedAt, count:st.cnt(d), open: op,
+                    icon: isFlow?'🚪':'📄', desc: desc});
         }catch(e){}
         break;
       }
@@ -261,9 +268,9 @@ function renderSaved(){
   forms.forEach(function(f){
     var card=document.createElement('div');card.className='card';card.style.cursor='default';
     var date=f.savedAt?new Date(f.savedAt).toLocaleDateString('he-IL'):'';
-    card.innerHTML='<div class="card-icon" style="background:#EEF2FF;">📄</div>'
+    card.innerHTML='<div class="card-icon" style="background:#EEF2FF;">'+(f.icon||'📄')+'</div>'
       +'<div class="card-name">'+f.name+'</div>'
-      +'<div class="card-desc">'+f.count+' שדות'+(date?' · '+date:'')+'</div>';
+      +'<div class="card-desc">'+(f.desc||(f.count+' שדות'))+(date?' · '+date:'')+'</div>';
     var btns=document.createElement('div');btns.style.cssText='display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;';
     var openBtn=document.createElement('button');openBtn.textContent='הצג';
     openBtn.style.cssText='flex:1;padding:7px;font-size:12px;font-weight:600;border-radius:8px;border:1px solid var(--accent);background:white;color:var(--accent);cursor:pointer;font-family:inherit;';
@@ -284,7 +291,7 @@ function renderSaved(){
 var _sendForm=null, _sendMode='group';
 function openSend(f){
   _sendForm=f;_sendMode='group';
-  document.getElementById('sendFormName').textContent='"'+f.name+'" · '+f.count+' שדות';
+  document.getElementById('sendFormName').textContent='"'+f.name+'" · '+(f.desc||(f.count+' שדות'));
   if(typeof SynelOrg!=='undefined'){
     SynelOrg.populateGroups(document.getElementById('sendGroup'));
     SynelOrg.populateEmployees(document.getElementById('sendEmployee'));
@@ -358,6 +365,20 @@ function confirmSend(){
     if(!localStorage.getItem("seed_v10")){
       Object.keys(SEED).forEach(function(k){ if(localStorage.getItem(k)===null) localStorage.setItem(k, JSON.stringify(SEED[k])); });
       localStorage.setItem("seed_v10","1");
+    }
+    if(!localStorage.getItem("seed_flow_v1")){
+      var FLOWSEED={"flow_קליטת עובד חדש":{"name":"קליטת עובד חדש","icon":"🚪","processType":"onboarding","preliminary":{"enabled":true,"title":"ברוכ/ה הבא/ה לסינאל","question":"כדי שנוכל לפנות אליך בצורה הנכונה – כיצד תרצה/י שנפנה אליך?","options":[{"value":"male","label":"זכר","emoji":"👨"},{"value":"female","label":"נקבה","emoji":"👩"}],"buttonText":"המשך ←"},"intro":{"greeting":"היי {{שם פרטי}}, ברוכ/ה הבא/ה לסינאל!","emoji":"👋","subtitle":"כדי שהיום הראשון יעבור חלק, נשלח אליך מצוות משאבי האנוש כמה שלבים קצרים למילוי מראש.","details":[{"label":"שם","dbField":"EMP_NAME"},{"label":"תפקיד","dbField":"EMP_JOB_DESCR"},{"label":"תאריך התחלה","dbField":"EMP_DATE_START"},{"label":"מנהל/ת ישיר/ה","dbField":"MNG_NAME"}],"durationMin":14,"buttonText":"מתחילים ←"},"outro":{"headline":"{{שם פרטי}}, סיימת! ברוכ/ה הבא/ה לסינאל","emoji":"🎉","subtitle":"כל הפרטים נקלטו. נתראה ביום הראשון!","nextSteps":["תקבל/י מייל עם סיכום הקליטה והעותק החתום של החוזה","ביום הראשון תפגוש/י את המנהל/ת שלך לסיור היכרות","אם יש שאלות – צוות HR זמין בכל עת"],"summaryButton":"צפייה בסיכום הקליטה","linksEnabled":true,"links":[{"label":"אתר החברה","sub":"www.synel.co.il","url":"https://www.synel.co.il","icon":"🌐"},{"label":"אפליקציית סינאל","sub":"הורד/י לנייד","url":"#","icon":"📱"},{"label":"פורטל עובדים","sub":"תלושים, חופשות, פניות HR","url":"#","icon":"👤"}]},"previewPage":"prelim","previewMode":"demo","savedAt":"2026-06-28T09:00:00.000Z"},"flow_סיום העסקה":{"name":"סיום העסקה","icon":"🚪","processType":"offboarding","preliminary":{"enabled":false,"title":"ברוכ/ה הבא/ה לסינאל","question":"כדי שנוכל לפנות אליך בצורה הנכונה – כיצד תרצה/י שנפנה אליך?","options":[{"value":"male","label":"זכר","emoji":"👨"},{"value":"female","label":"נקבה","emoji":"👩"}],"buttonText":"המשך ←"},"intro":{"greeting":"היי {{שם פרטי}}, נשלח אליך","emoji":"👋","subtitle":"כדי לסגור את תקופת העבודה שלך בסינאל בצורה חלקה, הכנו עבורך כמה שלבים קצרים.","details":[{"label":"שם","dbField":"EMP_NAME"},{"label":"תפקיד","dbField":"EMP_JOB_DESCR"},{"label":"תאריך עזיבה","dbField":""},{"label":"יום אחרון","dbField":""}],"durationMin":14,"buttonText":"מתחילים ←"},"outro":{"headline":"{{שם פרטי}}, תודה על הכל! בהצלחה בדרך הבאה","emoji":"🙏","subtitle":"כל הטפסים נקלטו. נשמח לשמוע עליך בעתיד.","nextSteps":["תקבל/י מייל עם עותק טופס 161 החתום","הפנסיה והקופות ישוחררו בתאריך העזיבה","מכתב ההמלצה יישלח אליך לאחר אישור המנהל","HR זמין לכל שאלה עד 30 יום לאחר העזיבה"],"summaryButton":"","linksEnabled":false,"links":[]},"previewPage":"intro","previewMode":"demo","savedAt":"2026-06-28T09:00:00.000Z"}};
+      Object.keys(FLOWSEED).forEach(function(k){ if(localStorage.getItem(k)===null) localStorage.setItem(k, JSON.stringify(FLOWSEED[k])); });
+      localStorage.setItem("seed_flow_v1","1");
+    }
+    if(!localStorage.getItem("synel_flow_dates_v1")){
+      for(var fi=0;fi<localStorage.length;fi++){ var fk=localStorage.key(fi);
+        if(!fk||fk.indexOf("flow_")!==0)continue;
+        try{ var fr=JSON.parse(localStorage.getItem(fk));
+          if(fr&&typeof fr==="object"&&!fr.savedAt){ fr.savedAt="2026-06-28T09:00:00.000Z"; localStorage.setItem(fk,JSON.stringify(fr)); }
+        }catch(e){}
+      }
+      localStorage.setItem("synel_flow_dates_v1","1");
     }
     if(typeof renderSaved==="function"){try{renderSaved();}catch(e){}}
   }catch(e){}}
