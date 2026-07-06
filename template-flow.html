@@ -193,6 +193,16 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
         <div class="fg"><span class="sec-lbl" style="margin:0;">אפשרויות</span><div id="pOptions" style="display:flex;flex-direction:column;gap:7px;"></div></div>
         <button class="add-btn" onclick="addPrelimOption()">+ הוסף אפשרות</button>
         <div class="fg"><label>טקסט כפתור</label><input id="pBtn" oninput="state.preliminary.buttonText=this.value;render()"></div>
+        <div class="toggle-row" style="margin-top:2px;">
+          <label class="switch"><input type="checkbox" id="pRequired" onchange="state.preliminary.required=this.checked;render()"><span class="slider"></span></label>
+          שדה חובה
+        </div>
+        <div class="fg"><label>שמירה בשדה בכרטיס העובד</label><div id="pDbMount"></div></div>
+        <div class="hint">הערך (זכר / נקבה / ניטרלי) נשמר בשדה זה בכרטיס העובד ומשמש לניסוח בכל תהליכי ה-Lifecycle — מסכים, הודעות, מיילים ומסמכים.</div>
+        <div class="hint" style="background:#F8F8FF;border:1px solid #E5E7EB;border-radius:8px;padding:9px;line-height:1.7;">
+          <strong>נוסח מגדרי בטקסטים:</strong> בעמודי הפתיחה והסיום השתמשו בטוקן <code>{g|זכר|נקבה|ניטרלי}</code>.<br>
+          דוגמה: <code>{g|ברוך הבא|ברוכה הבאה|טוב שהגעת}</code> — בבחירת "ללא פנייה מגדרית" נבחר הנוסח השלישי (הניטרלי).
+        </div>
       </div>
     </div>
 
@@ -255,6 +265,11 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
     תצוגה:
     <button id="modeDemo" onclick="setMode('demo')">נתוני דמו</button>
     <button id="modePh"   onclick="setMode('placeholder')">{{ placeholders }}</button>
+    <span style="margin:0 4px;color:#D1D5DB;">|</span>
+    פנייה:
+    <button id="genM" onclick="setGender('male')">👨 זכר</button>
+    <button id="genF" onclick="setGender('female')">👩 נקבה</button>
+    <button id="genN" onclick="setGender('neutral')">👤 ניטרלי</button>
   </div>
 
   <div class="phone-wrap">
@@ -284,11 +299,12 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
 var state = {
   name: '', icon: '🚪',
   processType: 'onboarding',
-  preliminary: { enabled:true, title:'', question:'', options:[], buttonText:'המשך ←' },
+  preliminary: { enabled:true, title:'', question:'', options:[], buttonText:'המשך ←', dbField:'EMP_ADDR_STYLE', required:true },
   intro: { greeting:'', emoji:'', subtitle:'', details:[], durationMin:14, buttonText:'מתחילים ←' },
   outro: { headline:'', emoji:'', subtitle:'', nextSteps:[], summaryButton:'', linksEnabled:true, links:[] },
   previewPage: 'intro',
-  previewMode: 'demo'
+  previewMode: 'demo',
+  previewGender: null
 };
 var tt;
 
@@ -298,13 +314,15 @@ var PRESETS = {
     name: 'קליטת עובד חדש',
     preliminary: {
       enabled:true,
-      title:'ברוכ/ה הבא/ה לסינאל',
-      question:'כדי שנוכל לפנות אליך בצורה הנכונה – כיצד תרצה/י שנפנה אליך?',
-      options:[ {value:'male',label:'זכר',emoji:'👨'}, {value:'female',label:'נקבה',emoji:'👩'} ],
-      buttonText:'המשך ←'
+      title:'ברוכים הבאים לסינאל',
+      question:'כדי שנוכל לפנות אליך בצורה הנכונה — איך תעדיפו שנפנה אליך במערכת?',
+      options:[ {value:'male',label:'זכר',emoji:'👨'}, {value:'female',label:'נקבה',emoji:'👩'}, {value:'neutral',label:'ללא פנייה מגדרית',emoji:'👤'} ],
+      buttonText:'המשך ←',
+      dbField:'EMP_ADDR_STYLE',
+      required:true
     },
     intro: {
-      greeting:'היי {{שם פרטי}}, ברוכ/ה הבא/ה לסינאל!',
+      greeting:'היי {{שם פרטי}}, {g|ברוך הבא|ברוכה הבאה|טוב שהצטרפת} לסינאל!',
       emoji:'👋',
       subtitle:'כדי שהיום הראשון יעבור חלק, נשלח אליך מצוות משאבי האנוש כמה שלבים קצרים למילוי מראש.',
       details:[
@@ -317,12 +335,12 @@ var PRESETS = {
       buttonText:'מתחילים ←'
     },
     outro: {
-      headline:'{{שם פרטי}}, סיימת! ברוכ/ה הבא/ה לסינאל',
+      headline:'{{שם פרטי}}, {g|סיימת|סיימת|הכול הושלם}! {g|ברוך הבא|ברוכה הבאה|טוב שהצטרפת} לסינאל',
       emoji:'🎉',
       subtitle:'כל הפרטים נקלטו. נתראה ביום הראשון!',
       nextSteps:[
-        'תקבל/י מייל עם סיכום הקליטה והעותק החתום של החוזה',
-        'ביום הראשון תפגוש/י את המנהל/ת שלך לסיור היכרות',
+        '{g|תקבל|תקבלי|יישלח אליך} מייל עם סיכום הקליטה והעותק החתום של החוזה',
+        'ביום הראשון {g|תפגוש|תפגשי|תתקיים פגישה עם} את המנהל/ת שלך לסיור היכרות',
         'אם יש שאלות – צוות HR זמין בכל עת'
       ],
       summaryButton:'צפייה בסיכום הקליטה',
@@ -338,10 +356,12 @@ var PRESETS = {
     name: 'סיום העסקה',
     preliminary: {
       enabled:false,
-      title:'ברוכ/ה הבא/ה לסינאל',
-      question:'כדי שנוכל לפנות אליך בצורה הנכונה – כיצד תרצה/י שנפנה אליך?',
-      options:[ {value:'male',label:'זכר',emoji:'👨'}, {value:'female',label:'נקבה',emoji:'👩'} ],
-      buttonText:'המשך ←'
+      title:'תודה על הדרך המשותפת',
+      question:'כדי שנוכל לפנות אליך בצורה הנכונה — איך תעדיפו שנפנה אליך במערכת?',
+      options:[ {value:'male',label:'זכר',emoji:'👨'}, {value:'female',label:'נקבה',emoji:'👩'}, {value:'neutral',label:'ללא פנייה מגדרית',emoji:'👤'} ],
+      buttonText:'המשך ←',
+      dbField:'EMP_ADDR_STYLE',
+      required:true
     },
     intro: {
       greeting:'היי {{שם פרטי}}, נשלח אליך',
@@ -357,11 +377,11 @@ var PRESETS = {
       buttonText:'מתחילים ←'
     },
     outro: {
-      headline:'{{שם פרטי}}, תודה על הכל! בהצלחה בדרך הבאה',
+      headline:'{{שם פרטי}}, תודה על הכל! {g|בהצלחה בדרך הבאה|בהצלחה בדרך הבאה|בהצלחה בהמשך}',
       emoji:'🙏',
       subtitle:'כל הטפסים נקלטו. נשמח לשמוע עליך בעתיד.',
       nextSteps:[
-        'תקבל/י מייל עם עותק טופס 161 החתום',
+        '{g|תקבל|תקבלי|יישלח אליך} מייל עם עותק טופס 161 החתום',
         'הפנסיה והקופות ישוחררו בתאריך העזיבה',
         'מכתב ההמלצה יישלח אליך לאחר אישור המנהל',
         'HR זמין לכל שאלה עד 30 יום לאחר העזיבה'
@@ -429,9 +449,21 @@ function demoMap(){
   var m = Object.assign({}, DEMO[state.processType]||{});
   return m;
 }
+/* מנוע פנייה מגדרי: פותר טוקן {g|זכר|נקבה|ניטרלי} לפי המגדר שנבחר.
+   ניטרלי חסר → נופל לנוסח הזכר. כך "ללא פנייה מגדרית" מקבל נוסח ניטרלי אמיתי. */
+function resolveGender(s){
+  var g = state.previewGender || 'male';
+  var idx = g==='female' ? 1 : (g==='neutral' ? 2 : 0);
+  return String(s==null?'':s).replace(/\{g\|([^}]*)\}/g, function(_, body){
+    var parts = body.split('|');
+    var chosen = parts[idx];
+    if(chosen==null || chosen==='') chosen = (parts[2]!=null && parts[2]!=='') ? parts[2] : (parts[0]||'');
+    return chosen;
+  });
+}
 /* מחליף אסימוני {{...}} בטקסט: בדמו מציג ערך, ב-placeholder משאיר {{...}} */
 function resolveText(s){
-  s = String(s==null?'':s);
+  s = resolveGender(String(s==null?'':s));
   if(state.previewMode==='placeholder') return s;
   var m = demoMap();
   return s.replace(/\{\{\s*([^}]+?)\s*\}\}/g, function(_, key){
@@ -464,6 +496,9 @@ function syncEditorFields(){
   document.getElementById('pTitle').value = state.preliminary.title;
   document.getElementById('pQuestion').value = state.preliminary.question;
   document.getElementById('pBtn').value = state.preliminary.buttonText;
+  var pReq=document.getElementById('pRequired'); if(pReq) pReq.checked = state.preliminary.required!==false;
+  var pDbMount=document.getElementById('pDbMount');
+  if(pDbMount){ pDbMount.innerHTML=''; pDbMount.appendChild(buildDBDropdown(state.preliminary.dbField||'', function(v){ state.preliminary.dbField=v; })); }
   // intro
   document.getElementById('iGreet').value = state.intro.greeting;
   document.getElementById('iEmoji').value = state.intro.emoji;
@@ -564,6 +599,9 @@ function render(){
   document.getElementById('tabOutro').classList.toggle('on', state.previewPage==='outro');
   document.getElementById('modeDemo').classList.toggle('on', state.previewMode==='demo');
   document.getElementById('modePh').classList.toggle('on', state.previewMode==='placeholder');
+  document.getElementById('genM').classList.toggle('on', state.previewGender==='male');
+  document.getElementById('genF').classList.toggle('on', state.previewGender==='female');
+  document.getElementById('genN').classList.toggle('on', state.previewGender==='neutral');
 
   var c=document.getElementById('phoneContent');
   var f=document.getElementById('phoneFooter');
@@ -587,22 +625,30 @@ function logoHTML(){
 function renderPrelim(c,f){
   var p=state.preliminary;
   var opts = p.options.map(function(o){
-    return '<div class="pv-gcard" onclick="selectGender(this)"><div class="ge">'+xe(o.emoji)+'</div><div class="gl">'+xe(o.label)+'</div></div>';
+    var sel = (o.value && o.value===state.previewGender) ? ' sel' : '';
+    return '<div class="pv-gcard'+sel+'" data-gender="'+xe(o.value)+'" onclick="selectGender(this)"><div class="ge">'+xe(o.emoji)+'</div><div class="gl">'+xe(o.label)+'</div></div>';
   }).join('');
+  var reqNote = p.required ? '<div style="text-align:center;font-size:12px;color:var(--red);margin-bottom:10px;">✳︎ שדה חובה — יש לבחור לפני המשך</div>' : '';
   c.innerHTML =
     logoHTML() +
     '<div class="pv-h">'+xe(p.title)+'</div>' +
     '<div class="pv-sub">'+xe(p.question)+'</div>' +
+    reqNote +
     '<div class="pv-gender">'+opts+'</div>' +
     '<div class="pv-spacer"></div>';
-  f.innerHTML = '<button class="pv-action-btn ghost" id="prelimBtn">'+xe(p.buttonText)+'</button>';
+  var chosen = !!state.previewGender;
+  var ghost = (p.required && !chosen) ? ' ghost' : '';
+  f.innerHTML = '<button class="pv-action-btn'+ghost+'" id="prelimBtn" onclick="prelimContinue()">'+xe(p.buttonText)+'</button>';
 }
 function selectGender(el){
-  var cards=el.parentNode.querySelectorAll('.pv-gcard');
-  for(var i=0;i<cards.length;i++) cards[i].classList.remove('sel');
-  el.classList.add('sel');
-  var btn=document.getElementById('prelimBtn');
-  if(btn) btn.classList.remove('ghost'); // הכפתור מקבל את צבע המיתוג ברגע שנבחר מגדר
+  var g = el.getAttribute('data-gender');
+  state.previewGender = g;
+  render();
+}
+function prelimContinue(){
+  if(state.preliminary.required && !state.previewGender){ toast('✳︎ יש לבחור אופן פנייה כדי להמשיך'); return; }
+  toast('✓ נשמר. הנוסח בכל התהליך יתאים לבחירה');
+  setPage('intro');
 }
 
 function renderIntro(c,f){
@@ -660,6 +706,7 @@ function setProcess(type){
 }
 function setPage(p){ state.previewPage=p; render(); }
 function setMode(m){ state.previewMode=m; render(); }
+function setGender(g){ state.previewGender=g; render(); }
 function toggleCard(id){ document.getElementById(id).classList.toggle('open'); }
 
 function addPrelimOption(){ state.preliminary.options.push({value:'',label:'',emoji:''}); renderEditorLists(); render(); }
@@ -693,7 +740,10 @@ function buildFlowOpts(){
         title: state.preliminary.title,
         question: state.preliminary.question,
         options: state.preliminary.options,
-        buttonText: state.preliminary.buttonText
+        buttonText: state.preliminary.buttonText,
+        dbField: state.preliminary.dbField || '',
+        required: state.preliminary.required !== false,
+        genderTokenFormat: '{g|male|female|neutral}'
       } : { enabled:false },
       intro: {
         greeting: state.intro.greeting,
@@ -769,7 +819,7 @@ function openLoad(){
 function loadForm(d){
   state = Object.assign(state, d);
   // הגנה על מבנה
-  state.preliminary = Object.assign({enabled:true,options:[]}, d.preliminary||{});
+  state.preliminary = Object.assign({enabled:true,options:[],dbField:'EMP_ADDR_STYLE',required:true}, d.preliminary||{});
   state.intro = Object.assign({details:[]}, d.intro||{});
   state.outro = Object.assign({nextSteps:[],links:[]}, d.outro||{});
   if(!state.previewPage) state.previewPage='intro';
