@@ -405,11 +405,13 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
       <label>עובד אחראי</label>
       <select class="ep-inp" id="fOwner" onchange="updateAssign && updateAssign()">
         <option value="">-- לא הוגדר --</option>
-        <option value="hr">HR</option>
-        <option value="manager">מנהל ישיר</option>
-        <option value="it">IT</option>
-        <option value="payroll">חשב שכר</option>
       </select>
+    </div>
+
+    <div class="ep-sec">
+      <label>רשימת תפקידים לבחירה</label>
+      <p style="font-size:10px;color:#9CA3AF;margin-bottom:5px;line-height:1.5;">תפקיד בכל שורה. "עובד אחראי" נבחר מתוך רשימה זו (כמו בקבלת/החזרת ציוד).</p>
+      <textarea class="ep-inp" id="roleListInput" rows="6" style="resize:vertical;direction:rtl;" oninput="populateOwnerFromRoles && populateOwnerFromRoles()"></textarea>
     </div>
   
     <div class="divider"></div>
@@ -1486,6 +1488,29 @@ function renderDBMappings(){
 </script>
 
 <script>/* Synel: פתיחת מופע שמור לפי ?load= */
-(function(){var m=location.search.match(/[?&]load=([^&]+)/);if(!m)return;var key="pension_"+decodeURIComponent(m[1]);function go(){try{var raw=localStorage.getItem(key);if(!raw)return;var d=JSON.parse(raw);if(typeof loadForm==='function')loadForm(d);}catch(e){}}if(document.readyState==='complete')setTimeout(go,350);else window.addEventListener('load',function(){setTimeout(go,350);});})();</script>
+/* ── עובד אחראי — בחירה מרשימת תפקידים ניתנת לעריכה (כמו בקבלת/החזרת ציוד) ── */
+/* הערה למפתח: בפרודקשן למשוך את רשימת התפקידים מטבלת התפקידים בהרמוני (endpoint), לא מרשימה קשיחה */
+var RESPONSIBLE_ROLES = ['HR','מנהל ישיר','IT','חשב שכר','מנהל','נציג מכירות','איש תמיכה','טכנאי','אנליסט','מזכירה'];
+function populateOwnerFromRoles(){
+  var ta=document.getElementById('roleListInput'), sel=document.getElementById('fOwner');
+  if(!ta||!sel) return;
+  var roles=ta.value.split('\n').map(function(x){return x.trim();}).filter(Boolean);
+  if(!roles.length){ roles=RESPONSIBLE_ROLES.slice(); ta.value=roles.join('\n'); }
+  var cur=sel.value;
+  sel.innerHTML='<option value="">-- לא הוגדר --</option>';
+  roles.forEach(function(r){var o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+  if(cur) sel.value=cur;
+}
+(function(){
+  var ta=document.getElementById('roleListInput');
+  if(ta && !ta.value.trim()) ta.value=RESPONSIBLE_ROLES.join('\n');
+  populateOwnerFromRoles();
+  /* לשמור ולטעון גם את עובד אחראי ואת רשימת התפקידים */
+  if(typeof getData==='function'){ var _g=getData; getData=function(){ var d=_g(); var s=document.getElementById('fOwner'), t=document.getElementById('roleListInput'); if(s)d.fOwner=s.value; if(t)d.roleListInput=t.value; return d; }; }
+  if(typeof loadForm==='function'){ var _l=loadForm; loadForm=function(data){ _l(data); if(data&&data.roleListInput!==undefined){var t=document.getElementById('roleListInput'); if(t)t.value=data.roleListInput;} populateOwnerFromRoles(); if(data&&data.fOwner){var s=document.getElementById('fOwner'); if(s)s.value=data.fOwner;} }; }
+})();
+
+(function(){var m=location.search.match(/[?&]load=([^&]+)/);if(!m)return;var key="pension_"+decodeURIComponent(m[1]);
+function go(){try{var raw=localStorage.getItem(key);if(!raw)return;var d=JSON.parse(raw);if(typeof loadForm==='function')loadForm(d);}catch(e){}}if(document.readyState==='complete')setTimeout(go,350);else window.addEventListener('load',function(){setTimeout(go,350);});})();</script>
 </body>
 </html>
