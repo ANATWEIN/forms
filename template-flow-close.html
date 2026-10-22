@@ -88,7 +88,7 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
 .pv-drow .lbl{font-size:13px;color:var(--text3);}
 .pv-drow .val{font-size:14px;color:var(--text);font-weight:600;}
 .pv-note{background:#FFF7ED;border:1px solid #FFE4C4;border-radius:12px;padding:13px 14px;font-size:13px;color:#9A6B2E;line-height:1.55;display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
-.pv-check{width:80px;height:80px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:40px;margin:14px auto 18px;}
+.pv-check{width:104px;height:104px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:700;margin:18px auto 20px;}
 .pv-next{background:#FAFAFA;border-radius:14px;padding:16px;margin-bottom:18px;}
 .pv-next .nt{font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px;}
 .pv-nextrow{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #EFEFEC;font-size:13px;color:var(--text);line-height:1.5;}
@@ -97,7 +97,7 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
 .pv-summary{width:100%;padding:14px;font-size:15px;font-weight:600;border-radius:12px;border:none;background:var(--orange);color:#fff;font-family:inherit;margin-bottom:18px;cursor:pointer;}
 .pv-links-t{font-size:12px;color:var(--text3);margin-bottom:8px;}
 .pv-link{display:flex;align-items:center;gap:12px;background:#FAFAFA;border-radius:12px;padding:13px 14px;margin-bottom:8px;}
-.pv-link .li{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:#E8603C;}
+.pv-link .li{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:var(--orange);}
 .pv-link .lt{flex:1;}
 .pv-link .lt .a{font-size:14px;font-weight:600;color:var(--text);}
 .pv-link .lt .b{font-size:11px;color:var(--text3);}
@@ -155,15 +155,11 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
   </div>
 
   <div class="ep-body">
-
-    <div class="ep-sec" style="display:flex;align-items:center;gap:8px;">
-      <span class="sec-lbl" style="margin:0;">מיתוג גלובלי</span>
-      <span id="brandMount" style="margin-right:auto;"></span>
-    </div>
     <!-- שם + סוג תהליך -->
     <div class="ep-sec">
       <label>שם התבנית</label>
       <input class="ep-inp" id="fName" oninput="render()" placeholder="קליטת עובד חדש">
+      <div class="hint" style="margin-top:4px;">לשימוש פנימי בלבד — לא מוצג לעובד בטופס.</div>
     </div>
 
     <div class="ep-sec">
@@ -173,6 +169,28 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
         <button id="procOff" onclick="setProcess('offboarding')">פרישה (Offboarding)</button>
       </div>
       <div class="hint" style="margin-top:6px;">החלפת סוג טוענת ברירות מחדל מתאימות (טקסטים, שדות, עמוד מקדים).</div>
+    </div>
+
+    <!-- מיתוג: לוגו + צבע מותג (מוצגים לעובד בכל עמודי המעטפת) -->
+    <div class="ep-sec" id="brandSec">
+      <span class="sec-lbl">מיתוג</span>
+      <div class="fg"><label>לוגו הארגון</label>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div id="brandLogoPrev" style="width:52px;height:52px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px;overflow:hidden;"></div>
+          <label class="btn" style="cursor:pointer;margin:0;">העלאת לוגו<input type="file" accept="image/*" id="brandLogoFile" style="display:none;"></label>
+          <button type="button" class="btn" id="brandLogoDel">הסרה</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+          <span class="hint" style="margin:0;">בלי לוגו מוצגים ראשי תיבות:</span>
+          <input id="brandText" maxlength="3" style="width:64px;text-align:center;">
+        </div>
+      </div>
+      <div class="fg"><label>צבע מותג</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;" id="brandSwatches">
+          <input type="color" id="brandColor" style="width:44px;height:34px;padding:2px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;">
+        </div>
+        <div class="hint" style="margin-top:6px;">הצבע חל על הכפתורים, הלוגו והבחירות בטופס.</div>
+      </div>
     </div>
 
     <div class="divider"></div>
@@ -229,6 +247,11 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
         <span>③</span><span class="t">עמוד סיום</span><span class="chev">›</span>
       </div>
       <div class="sec-card-body">
+        <div class="toggle-row" style="margin-bottom:6px;">
+          <label class="switch"><input type="checkbox" id="oCheck"><span class="slider"></span></label>
+          אייקון וי גדול בראש העמוד
+        </div>
+        
         <div class="fg"><label>כותרת <span style="color:var(--text3)">(אפשר {{שדה DB}})</span></label><textarea id="oHead" oninput="state.outro.headline=this.value;render()"></textarea></div>
         <div class="fg"><label>אימוג'י</label><input id="oEmoji" style="width:80px;" oninput="state.outro.emoji=this.value;render()"></div>
         <div class="fg"><label>כותרת משנה</label><textarea id="oSub" oninput="state.outro.subtitle=this.value;render()"></textarea></div>
@@ -884,6 +907,39 @@ function seedDefaultTemplates(){
 /* מעטפת סיום: עמוד סיום בלבד */
 (function(){var _r=render;window.render=function(){state.previewPage='outro';_r();};
 document.getElementById('cardOutro').classList.add('open');render();})();
+</script>
+<script>
+/* ── מיתוג (לוגו + צבע) ואייקון הסיום ── */
+(function(){
+  var SW=['#E8603C','#4F46E5','#0E7490','#2D7A4F','#B91C1C','#1E1B4B'];
+  function brand(){ if(!state.brand) state.brand={logoImage:'',logoText:'SY',color:'#E8603C'}; return state.brand; }
+  window.SynelBrand={get:function(){return brand();}};
+  var sw=document.getElementById('brandSwatches');
+  SW.forEach(function(c){var b=document.createElement('button');b.type='button';b.title=c;b.style.cssText='width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #E5E7EB;cursor:pointer;background:'+c;b.onclick=function(){brand().color=c;render();};sw.appendChild(b);});
+  document.getElementById('brandColor').addEventListener('input',function(){brand().color=this.value;render();});
+  document.getElementById('brandText').addEventListener('input',function(){brand().logoText=this.value;render();});
+  document.getElementById('brandLogoFile').addEventListener('change',function(){
+    var f=this.files&&this.files[0]; if(!f) return; var r=new FileReader();
+    r.onload=function(){brand().logoImage=r.result;render();}; r.readAsDataURL(f); this.value='';
+  });
+  document.getElementById('brandLogoDel').addEventListener('click',function(){brand().logoImage='';render();});
+  var oc=document.getElementById('oCheck');
+  if(oc) oc.addEventListener('change',function(){state.outro.icon=this.checked?'check':'none';render();});
+  function sync(){
+    var b=brand();
+    var pw=document.querySelector('.phone-wrap'); if(pw) pw.style.setProperty('--orange',b.color||'#E8603C');
+    var pv=document.getElementById('brandLogoPrev');
+    pv.style.background=b.logoImage?'transparent':(b.color||'#E8603C');
+    pv.innerHTML=b.logoImage?'<img src="'+b.logoImage+'" style="width:100%;height:100%;object-fit:contain;">':(b.logoText||'SY').replace(/[<>&]/g,'');
+    var bc=document.getElementById('brandColor'); if(bc.value.toLowerCase()!==(b.color||'').toLowerCase()) bc.value=b.color||'#E8603C';
+    var bt=document.getElementById('brandText'); if(document.activeElement!==bt) bt.value=b.logoText||'';
+    document.getElementById('brandLogoDel').style.display=b.logoImage?'':'none';
+    if(oc) oc.checked=state.outro&&state.outro.icon!=='none';
+  }
+  var _r=window.render; window.render=function(){ brand(); sync(); _r(); };
+  var _l=window.loadForm; window.loadForm=function(d){ _l(d); brand(); render(); };
+  render();
+})();
 </script>
 <script src="synel-export.js"></script>
 <script src="synel-help.js"></script>
