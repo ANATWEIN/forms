@@ -149,6 +149,7 @@ textarea.ep-input{resize:vertical;min-height:60px;}
 <script src="synel-brand.js"></script>
 <script src="synel-nav.js"></script>
 <script src="synel-publish.js"></script>
+<script src="synel-shell.js"></script>
 </head>
 <body>
 
@@ -421,8 +422,6 @@ function renderEditor(){
       +'<div class="qfld"><span>תיאור לשאלה</span>'
         +'<input value="'+esc(qq.desc)+'" placeholder="הנחיה אופציונלית" oninput="upd(\''+id+'\',\'desc\',this.value)"></div>'
       +answerCfg
-      +'<div class="qfld"><span>עובד אחראי</span>'
-        +'<select onchange="upd(\''+id+'\',\'responsibleRole\',this.value)">'+roleOptions(qq.responsibleRole)+'</select></div>'
       +'<div class="togrow" style="margin-top:2px"><span>שדה חובה</span>'
         +'<div class="tog'+(qq.required?' on':'')+'" onclick="togReq(\''+id+'\',this)"><i></i></div></div>';
     list.appendChild(d);

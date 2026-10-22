@@ -143,6 +143,7 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
 <script src="synel-brand.js"></script>
 <script src="synel-nav.js"></script>
 <script src="synel-publish.js"></script>
+<script src="synel-shell.js"></script>
 </head>
 <body>
 
@@ -180,7 +181,6 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
           <button class="at-btn" onclick="addSec('db')">🗄 שורות DB</button>
           <button class="at-btn" onclick="addSec('text')">📝 טקסט חופשי</button>
           <button class="at-btn" onclick="addSec('info')">ℹ️ בועית מידע</button>
-          <button class="at-btn" onclick="addSec('doc')">📄 כפתור מסמך</button>
         </div>
         <button class="add-btn" onclick="document.getElementById('addGrid').classList.toggle('open')">+ הוסף סעיף</button>
       </div>
@@ -303,7 +303,6 @@ var sections=[
     {label:'מועד שחרור פנסיה/קופות', value:'15 ביוני 2026', type:'date_calc', dbField:'pension_release_date', calcFormula:'termination_date + 30d'},
   ]},
   {type:'info', title:'', text:'הנתונים נשלפים אוטומטית מהמערכת. במידה ויש אי-התאמה, פני לחשב השכר לפני החתימה.'},
-  {type:'doc',  title:'', btnText:'צפייה במסמך המלא 📄', btnNote:'יש לפתוח ולגלול את המסמך המלא לפני החתימה'},
   {type:'text', title:'ג. קופות גמל ופנסיה', content:'הכספים יועמדו לרשות העובדת ביום 15 ביוני 2026.\n\n**ד. אישורים**\nאני מאשרת כי קיבלתי את כל המגיע לי עבור תקופת עבודתי בסינאל בע"מ.'},
 ];
 
