@@ -97,7 +97,8 @@
   var S = {
     name: '', icon: '', sub: '', time: '', btn: 'אישור והמשך ←',
     consent: true, consentText: 'קראתי והבנתי', sig: false, fullDoc: !!cfg.fullDoc,
-    stepCur: '1', stepTotal: '1', progress: true, back: true, later: true, backList: true
+    stepCur: '1', stepTotal: '1', progress: true, back: true, later: true, backList: true,
+    brand: '#E95B19'
   };
   var STORE = 'synel_form::' + PAGE + '::';
 
@@ -150,6 +151,12 @@
     + '.sh-sigbox{border:1.5px dashed #C7D2FE;border-radius:10px;padding:14px;text-align:center;font-size:12.5px;color:#4F46E5;background:#F8F8FF}'
     + '.sh-links{display:flex;justify-content:center;gap:18px}'
     + '.sh-link{background:none;border:0;padding:4px;font:inherit;font-size:12.5px;color:#6B7280;cursor:pointer}'
+    + '.sh-color{width:44px;height:34px;padding:2px;border:1px solid #E5E7EB;border-radius:8px;background:#fff;cursor:pointer}'
+    + '.sh-prog b{background:var(--sh-brand,#E95B19)}'
+    + '.sh-cons input{accent-color:var(--sh-brand,#E95B19)}'
+    + '.sh-doc{color:var(--sh-brand,#E95B19)}'
+    + '.sh-sigbox{border-color:var(--sh-brand,#E95B19);color:var(--sh-brand,#E95B19);background:#fff}'
+    + '.phone-wrap #actionBtn,.phone #actionBtn,.phone-wrap .pv-action-btn,.phone-wrap .action-btn,.phone-wrap .action-btn,.phone #mainBtn,.phone .main-btn,.phone .btn-primary{background:var(--sh-brand,#E95B19) !important;border-color:var(--sh-brand,#E95B19) !important;color:#fff !important}'
     + '.sh-hide{display:none !important}'
     + '.sh-pick{position:fixed;z-index:9999;background:#fff;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.15);padding:10px;display:grid;grid-template-columns:repeat(8,30px);gap:4px}'
     + '.sh-pick button{width:30px;height:30px;border:0;background:none;font-size:18px;cursor:pointer;border-radius:6px}'
@@ -232,7 +239,8 @@
       + '<button type="button" class="sh-ico" data-pick aria-label="בחירת אייקון"></button>'
       + '<input class="sh-in" data-k="name" placeholder="שם הטופס"></div></div>'
       + '<div class="sh-f"><span>כותרת משנה</span><input class="sh-in" data-k="sub" placeholder="משפט קצר שמסביר לעובד מה לעשות"></div>'
-      + '<div class="sh-f"><span>זמן משוער</span><div class="sh-row"><input class="sh-in sh-num" data-k="time" type="number" min="1"><span class="sh-mini">דקות</span></div></div>';
+      + '<div class="sh-f"><span>זמן משוער</span><div class="sh-row"><input class="sh-in sh-num" data-k="time" type="number" min="1"><span class="sh-mini">דקות</span></div></div>'
+      + '<div class="sh-f"><span>צבע מותג</span><div class="sh-row"><input type="color" class="sh-color" data-k="brand"><span class="sh-mini" data-brandhex></span><button type="button" class="sh-link" data-brandreset>ברירת מחדל</button></div></div>';
     body.insertBefore(top, body.firstChild);
 
     var bot = document.createElement('div');
@@ -277,12 +285,14 @@
       blk.addEventListener('change', onEdit);
     });
     top.querySelector('[data-pick]').addEventListener('click', function (e) { openPicker(e.currentTarget); });
+    top.querySelector('[data-brandreset]').addEventListener('click', function () { S.brand = '#E95B19'; fillEditor(); later(); });
     fillEditor();
   }
   function onEdit(e) {
     var k = e.target.getAttribute('data-k'); if (!k) return;
     S[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     if (k === 'consent') syncShow();
+    if (k === 'brand') { var hx = document.querySelector('[data-brandhex]'); if (hx) hx.textContent = S.brand.toUpperCase(); }
     push(); later();
   }
   function fillEditor() {
@@ -291,6 +301,7 @@
       if (el.type === 'checkbox') el.checked = !!S[k]; else el.value = S[k] == null ? '' : S[k];
     });
     var ico = document.querySelector('.sh-ico'); if (ico) ico.textContent = S.icon || '😀';
+    var hx = document.querySelector('[data-brandhex]'); if (hx) hx.textContent = (S.brand || '').toUpperCase();
     syncShow();
   }
   function syncShow() {
@@ -340,6 +351,9 @@
   }
   function renderPreview() {
     if (!bar) return;
+    var ph = document.querySelector('.phone-wrap') || document.querySelector('.phone');
+    var c = S.brand || '#E95B19';
+    if (ph) { ph.style.setProperty('--sh-brand', c); ph.style.setProperty('--orange', c); ph.style.setProperty('--accent', c); }
     var cur = Math.max(1, parseInt(S.stepCur, 10) || 1), tot = Math.max(cur, parseInt(S.stepTotal, 10) || 1);
     bar.innerHTML =
       (S.back ? '<button type="button" class="sh-back" aria-label="חזרה">→</button>' : '')
