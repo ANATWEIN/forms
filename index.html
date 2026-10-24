@@ -81,22 +81,15 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
       <a href="template-list.html" class="card">
         <div class="card-icon" style="background:#ECFDF5;">📋</div>
         <div class="card-name">רשימה + המשך</div>
-        <div class="card-desc">לוז, רשימת משימות, אישור קריאה כללי</div>
+        <div class="card-desc">רשימת משימות — שעה/אייקון, כותרת, תת-כותרת ובועית זמן</div>
         <span class="card-tag" style="background:#ECFDF5;color:#065F46;">לוז / עמוד</span>
-      </a>
-
-      <a href="template-info-db.html" class="card">
-        <div class="card-icon" style="background:#EFF6FF;">🗄</div>
-        <div class="card-name">הצגת מידע</div>
-        <div class="card-desc">גמר חשבון, נתונים מהמערכת + חתימה</div>
-        <span class="card-tag" style="background:#EFF6FF;color:#1D4ED8;">DB</span>
       </a>
 
       <a href="template-highlights.html" class="card">
         <div class="card-icon" style="background:#EEF2FF;">⭐</div>
-        <div class="card-name">Highlights + מסמך</div>
-        <div class="card-desc">כרטיסיות בולטות + מסמך לחתימה — חוזה העסקה</div>
-        <span class="card-tag" style="background:#EEF2FF;color:#4338CA;">חוזה</span>
+        <div class="card-name">מסמך + Highlights</div>
+        <div class="card-desc">עיקרי המסמך (שורות DB, נקודות, בועית מידע) + מסמך מלא לחתימה — חוזה, סעיף 14, טופס 161</div>
+        <span class="card-tag" style="background:#EEF2FF;color:#4338CA;">מסמך</span>
       </a>
 
       <a href="template-quiz.html" class="card">
@@ -109,7 +102,7 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
       <a href="template-pension.html" class="card">
         <div class="card-icon" style="background:#F0FDF4;">💰</div>
         <div class="card-name">שאלון פנסיה</div>
-        <div class="card-desc">זרימה קבועה — ביטוח קיים / פנסיה ברירת מחדל</div>
+        <div class="card-desc">בדיקה מול המסלקה, בחירת קרן או פנסיית ברירת מחדל</div>
         <span class="card-tag" style="background:#F0FDF4;color:#065F46;">פנסיה</span>
       </a>
 
@@ -328,9 +321,6 @@ function confirmSend(){
   alert('הטופс "'+_sendForm.name+'" נשלח אל: '+label+'\n(רישום זמני — יוחלף בשליחה דרך Harmony)');
 }
 </script>
-<script src="synel-org.js"></script>
-<script src="synel-export.js"></script>
-<script src="synel-brand.js"></script>
 <script>
 (function(){
   function mount(){
@@ -341,7 +331,6 @@ function confirmSend(){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mount); else mount();
 })();
 </script>
-<script src="synel-help.js"></script>
 
 <script>/* Synel v7: זריעה לעורכים + ניקוי שאריות */
 (function(){

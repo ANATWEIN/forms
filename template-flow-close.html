@@ -127,17 +127,75 @@ body{font-family:'Helvetica Neue',Arial,sans-serif;direction:rtl;background:var(
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 </style>
 
-<script src="synel-db.js"></script>
-<script src="synel-org.js"></script>
-<script src="synel-assign.js"></script>
-<script src="synel-validation.js"></script>
-<script src="synel-autosave.js"></script>
-<script src="synel-accessibility.js"></script>
-<script src="synel-versions.js"></script>
-<script src="synel-mobile.js"></script>
-<script src="synel-publish.js"></script>
-<script src="synel-brand.js"></script>
-<script src="synel-nav.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   synel-db.js — רשימת שדות ה-DB של הרמוני ובורר שדה DB אחיד
+   כל בחירת שדה DB בתבניות היא בחירה מהרשימה הזו (לא הקלדה חופשית).
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  // dbField · labelHe · category · type (text | currency | days | date | date_calc | percent | bool)
+  var FIELDS = [
+    { dbField: 'EMP_NAME', labelHe: 'שם מלא', category: 'פרטי עובד', type: 'text' },
+    { dbField: 'EMP_FIRST_NAME', labelHe: 'שם פרטי', category: 'פרטי עובד', type: 'text' },
+    { dbField: 'TZ', labelHe: 'תעודת זהות', category: 'פרטי עובד', type: 'text' },
+    { dbField: 'EMP_DATE_START', labelHe: 'תאריך תחילת עבודה', category: 'פרטי עובד', type: 'date' },
+    { dbField: 'EMP_DEPARTMENT_DESCR', labelHe: 'מחלקה', category: 'פרטי עובד', type: 'text' },
+    { dbField: 'EMP_JOB_DESCR', labelHe: 'תיאור תפקיד', category: 'תפקיד', type: 'text' },
+    { dbField: 'job_title', labelHe: 'תפקיד', category: 'תפקיד', type: 'text' },
+    { dbField: 'MNG_NAME', labelHe: 'שם מנהל/ת ישיר/ה', category: 'תפקיד', type: 'text' },
+    { dbField: 'work_hours', labelHe: 'שעות עבודה', category: 'תפקיד', type: 'text' },
+    { dbField: 'monthly_salary', labelHe: 'שכר חודשי', category: 'שכר ותנאים', type: 'currency' },
+    { dbField: 'last_gross', labelHe: 'ברוטו חודש אחרון', category: 'שכר ותנאים', type: 'currency' },
+    { dbField: 'benefits', labelHe: 'תנאים סוציאליים', category: 'שכר ותנאים', type: 'text' },
+    { dbField: 'severance', labelHe: 'פיצויי פיטורין', category: 'שכר ותנאים', type: 'currency' },
+    { dbField: 'vacation_days', labelHe: 'יתרת ימי חופשה', category: 'היעדרויות', type: 'days' },
+    { dbField: 'sick_days', labelHe: 'יתרת ימי מחלה', category: 'היעדרויות', type: 'days' },
+    { dbField: 'termination_date', labelHe: 'תאריך פרישה', category: 'פרישה', type: 'date' },
+    { dbField: 'pension_release_date', labelHe: 'מועד שחרור פנסיה/קופות', category: 'פרישה', type: 'date_calc' },
+    { dbField: 'Equip.Status', labelHe: 'סטטוס ציוד', category: 'ציוד', type: 'text' }
+  ];
+
+  var MAP = {};
+  FIELDS.forEach(function (f) { MAP[f.dbField] = f; });
+  window.SYNEL_DB_FIELDS = FIELDS;
+  window.SYNEL_DB_MAP = MAP;
+
+  // בורר שדה DB: רשימה נפתחת מקובצת לפי קטגוריה
+  window.buildDBDropdown = function (value, onChange) {
+    var sel = document.createElement('select');
+    sel.className = 'synel-db-select';
+    sel.style.cssText = 'width:100%;padding:5px 8px;font-size:12px;border:1px solid #C7D2FE;border-radius:6px;background:#EEF2FF;color:#4338CA;font-family:inherit;';
+    var empty = document.createElement('option'); empty.value = ''; empty.textContent = '— בחירת שדה DB —'; sel.appendChild(empty);
+    var cats = {};
+    FIELDS.forEach(function (f) { (cats[f.category] = cats[f.category] || []).push(f); });
+    Object.keys(cats).forEach(function (c) {
+      var og = document.createElement('optgroup'); og.label = c;
+      cats[c].forEach(function (f) {
+        var o = document.createElement('option'); o.value = f.dbField; o.textContent = f.labelHe + ' — ' + f.dbField;
+        if (f.dbField === value) o.selected = true;
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+    if (value && !MAP[value]) { var x = document.createElement('option'); x.value = value; x.textContent = value; x.selected = true; sel.appendChild(x); }
+    sel.addEventListener('change', function () { if (onChange) onChange(sel.value, MAP[sel.value] || null); });
+    return sel;
+  };
+
+  // מי ממלא את השדה
+  var FILLERS = [['E_', 'עובד'], ['M_', 'מנהל'], ['S_', 'מנהל על'], ['A_', 'כולם']];
+  window.buildFillerSelect = function (value, onChange) {
+    var sel = document.createElement('select');
+    sel.style.cssText = 'padding:5px 8px;font-size:12px;border:1px solid #E5E7EB;border-radius:6px;font-family:inherit;';
+    FILLERS.forEach(function (f) { var o = document.createElement('option'); o.value = f[0]; o.textContent = f[1]; if (f[0] === value) o.selected = true; sel.appendChild(o); });
+    sel.addEventListener('change', function () { if (onChange) onChange(sel.value); });
+    return sel;
+  };
+})();
+
+</script>
 <style>#cardPrelim,#cardIntro,#tabPrelim,#tabIntro,.pv-tabs{display:none !important}</style>
 </head>
 
@@ -926,7 +984,5 @@ document.getElementById('cardOutro').classList.add('open');render();})();
   render();
 })();
 </script>
-<script src="synel-export.js"></script>
-<script src="synel-help.js"></script>
 </body>
 </html>
